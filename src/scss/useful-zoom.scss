@@ -1,0 +1,44 @@
+/*
+	Reference Styling for An Interactive Row of Thumbnails
+*/
+
+@media all {
+
+	@import "compass/css3";
+	@import "compass/utilities";
+	@import "definitions";
+	@import "typography";
+
+	.useful-zoom {
+		display : block;
+		margin : 0;
+		max-width : 480px;
+		min-width : 240px;
+		overflow : hidden;
+		padding : 0;
+		position : relative;
+		* {
+			@include box-sizing(border-box);
+		}
+		a img {
+			display : block;
+			height : auto;
+			width : 100%;
+		}
+		.useful-zoom-overlay {
+			background-size : 100% auto;
+			left : 0;
+			top : 0;
+			right : 0;
+			bottom : 0;
+			position : absolute;
+		}
+	}
+}
+
+@media (min-width: 1200px) {}
+@media (min-width: 980px) and (max-width: 1199px) {}
+@media (min-width: 768px) and (max-width: 979px) {}
+@media (max-width: 767px) {}
+@media (max-width: 480px) {}
+@media print {}
