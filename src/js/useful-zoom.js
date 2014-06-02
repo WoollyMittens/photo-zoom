@@ -101,7 +101,7 @@
 				'swipeDown' : function (coords) {},
 				'drag' : this.onDrag(),
 				'pinch' : this.onPinch(),
-				'twist' : this.onTwist()
+				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {}
 			});
 		};
 		this.measureDimensions = function () {
