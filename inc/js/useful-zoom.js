@@ -611,9 +611,9 @@
 			console.log('grid - cols:', cols, startCol, endCol);
 			console.log('grid - rows:', rows, startRow, endRow);
 			// for every row of the grid
-			for (var row = startRow; row <= endRow; row += 1) {
+			for (var row = startRow; row < endRow; row += 1) {
 				// for every column in the row
-				for (var col = startCol; col <= endCol; col += 1) {
+				for (var col = startCol; col < endCol; col += 1) {
 					// formulate the name this tile should have (tile_x_y_z)
 					tileName = 'tile_' + col + '_' + row + '_' + zoom;
 					// if this is a new tile
@@ -683,8 +683,8 @@
 				this.remove();
 			// if it exists within the visible area and at the zoom level
 			} else if (
-				(this.right > area.left || this.left < area.right) &&
-				(this.bottom > area.top || this.top < area.bottom)
+				(this.right >= area.left || this.left <= area.right) &&
+				(this.bottom >= area.top || this.top <= area.bottom)
 			) {
 				// show the tile
 				this.show();

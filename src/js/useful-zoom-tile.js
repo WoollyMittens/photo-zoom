@@ -37,8 +37,8 @@
 				this.remove();
 			// if it exists within the visible area and at the zoom level
 			} else if (
-				(this.right > area.left || this.left < area.right) &&
-				(this.bottom > area.top || this.top < area.bottom)
+				(this.right >= area.left || this.left <= area.right) &&
+				(this.bottom >= area.top || this.top <= area.bottom)
 			) {
 				// show the tile
 				this.show();
