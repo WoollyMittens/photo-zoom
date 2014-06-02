@@ -722,8 +722,8 @@
 				.replace('{src}', this.cfg.tileUrl)
 				.replace('{left}', this.left)
 				.replace('{top}', this.top)
-				.replace('{right}', this.right)
-				.replace('{bottom}', this.bottom)
+				.replace('{right}', 1 - this.right)
+				.replace('{bottom}', 1 - this.bottom)
 				.replace('{width}', Math.round(this.cfg.tileSize * rightCor))
 				.replace('{height}', Math.round(this.cfg.tileSize * bottomCor)) + ')';
 			// add the tile to the layer

@@ -6,7 +6,6 @@
 	source: http://www.jooney.co.uk/
 	description: A simple PHP webservice to slice and scale photos.
 	example: imageslice.php?src={src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}
-	note: The coordinates have been changed from "left0, top0, left1, top1" to "left, top, right, bottom"
 */
 
 	class imageSlice
@@ -34,8 +33,8 @@
 			$this->cropTop = $imageHeight * $cropTop;
 
 			// get a pixel value for the dimensions of the crop
-			$this->cropWidth = $imageWidth * (1 - $cropRight - $cropLeft);
-			$this->cropHeight = $imageHeight * (1 - $cropBottom - $cropTop);
+			$this->cropWidth = $imageWidth * ($cropRight - $cropLeft);
+			$this->cropHeight = $imageHeight * ($cropBottom - $cropTop);
 		}
 
 		function createSlice($sliceWidth, $sliceHeight)
