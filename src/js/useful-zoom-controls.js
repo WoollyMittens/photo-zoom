@@ -29,13 +29,19 @@
 			this.ui.zoomIn = document.createElement('button');
 			this.ui.zoomIn.className = 'useful-zoom-in enabled';
 			this.ui.zoomIn.innerHTML = 'Zoom In';
-			this.ui.zoomIn.addEventListener('click', this.onZoom(1.5));
+			this.ui.zoomIn.addEventListener('touchstart', this.onSuspendTouch());
+			this.ui.zoomIn.addEventListener('mousedown', this.onSuspendTouch());
+			this.ui.zoomIn.addEventListener('touchend', this.onZoom(1.5));
+			this.ui.zoomIn.addEventListener('mouseup', this.onZoom(1.5));
 			this.obj.appendChild(this.ui.zoomIn);
 			// add the zoom out button
 			this.ui.zoomOut = document.createElement('button');
 			this.ui.zoomOut.className = 'useful-zoom-out disabled';
 			this.ui.zoomOut.innerHTML = 'Zoom Out';
-			this.ui.zoomOut.addEventListener('click', this.onZoom(0.75));
+			this.ui.zoomOut.addEventListener('touchstart', this.onSuspendTouch());
+			this.ui.zoomOut.addEventListener('mousedown', this.onSuspendTouch());
+			this.ui.zoomOut.addEventListener('touchend', this.onZoom(0.75));
+			this.ui.zoomOut.addEventListener('mouseup', this.onZoom(0.75));
 			this.obj.appendChild(this.ui.zoomOut);
 			// add the controls to the parent
 			this.parent.obj.appendChild(this.obj);
@@ -63,6 +69,8 @@
 			return function (evt) {
 				// cancel the click
 				evt.preventDefault();
+				// restore the touch events
+				_this.parent.gestures.paused = false;
 				// apply the zoom factor
 				var transformation = _this.parent.transformation,
 					dimensions = _this.parent.dimensions;
@@ -70,6 +78,16 @@
 				transformation.zoom = Math.max(Math.min(transformation.zoom * factor, dimensions.maxZoom), 1);
 				// redraw
 				_this.parent.redraw();
+			};
+		};
+
+		this.onSuspendTouch = function () {
+			var _this = this;
+			return function (evt) {
+				// cancel the click
+				evt.preventDefault();
+				// suspend touch events
+				_this.parent.gestures.paused = true;
 			};
 		};
 

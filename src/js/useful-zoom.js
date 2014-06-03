@@ -20,7 +20,7 @@
 		this.transformation = {
 			'left' : 0.5,
 			'top' : 0.5,
-			'zoom' : 2,
+			'zoom' : 1,
 			'rotate' : 0
 		};
 		this.dimensions = {
@@ -108,7 +108,8 @@
 				'swipeDown' : function (coords) {},
 				'drag' : this.onDrag(),
 				'pinch' : this.onPinch(),
-				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {}
+				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {},
+				'doubleTap' : this.onDoubleTap()
 			});
 			// cancel transitions afterwards
 			this.obj.addEventListener('transitionEnd', this.afterTransitions());
@@ -165,6 +166,19 @@
 				);
 			};
 		};
+		this.onDoubleTap = function () {
+			var _this = this;
+			return function (coords) {
+				coords.event.preventDefault();
+				// calculate the zoom
+				_this.transform({
+					'left' : (coords.x / _this.dimensions.width - 0.5) + _this.transformation.left,
+					'top' : (coords.y / _this.dimensions.height - 0.5) + _this.transformation.top,
+					'zoom' : _this.transformation.zoom * 1.5
+				});
+				console.log('double tap:', coords, _this.dimensions);
+			};
+		};
 		this.afterTransitions = function () {
 			var _this = this;
 			return function () {
@@ -176,10 +190,10 @@
 
 		this.transform = function (transformation) {
 			// apply the transformation
-			this.transformation.left = Math.max(Math.min(transformation.left, 1), 0);
-			this.transformation.top = Math.max(Math.min(transformation.top, 1), 0);
-			this.transformation.zoom = Math.max(Math.min(transformation.zoom, this.dimensions.maxZoom), 1);
-			this.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0);
+			this.transformation.left = Math.max(Math.min(transformation.left, 1), 0) || this.transformation.left;
+			this.transformation.top = Math.max(Math.min(transformation.top, 1), 0) || this.transformation.top;
+			this.transformation.zoom = Math.max(Math.min(transformation.zoom, this.dimensions.maxZoom), 1) || this.transformation.zoom;
+			this.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0) || this.transformation.rotate;
 			// activate the transition
 			this.overlay.obj.className += ' useful-zoom-transition';
 			// trigger the transformation

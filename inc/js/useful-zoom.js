@@ -16,10 +16,12 @@
 		// properties
 		this.obj = obj;
 		this.cfg = cfg;
+		this.lastTouch = null;
 		this.touchOrigin = null;
 		this.touchProgression = null;
 		this.gestureOrigin = null;
 		this.gestureProgression = null;
+		this.paused = false;
 		// methods
 		this.start = function () {
 			// check the configuration properties
@@ -62,6 +64,7 @@
 			config.drag = config.drag || function () {};
 			config.pinch = config.pinch || function () {};
 			config.twist = config.twist || function () {};
+			config.doubleTap = config.doubleTap || function () {};
 		};
 		this.readEvent = function (event) {
 			var coords = {}, offsets;
@@ -103,18 +106,21 @@
 			}
 		};
 		this.startTouch = function (event) {
-			// get the coordinates from the event
-			var coords = this.readEvent(event);
-			// note the start position
-			this.touchOrigin = {
-				'x' : coords.x,
-				'y' : coords.y,
-				'target' : event.target || event.srcElement
-			};
-			this.touchProgression = {
-				'x' : this.touchOrigin.x,
-				'y' : this.touchOrigin.y
-			};
+			// if the functionality wasn't paused
+			if (!this.paused) {
+				// get the coordinates from the event
+				var coords = this.readEvent(event);
+				// note the start position
+				this.touchOrigin = {
+					'x' : coords.x,
+					'y' : coords.y,
+					'target' : event.target || event.srcElement
+				};
+				this.touchProgression = {
+					'x' : this.touchOrigin.x,
+					'y' : this.touchOrigin.y
+				};
+			}
 		};
 		this.changeTouch = function (event) {
 			// if there is an origin
@@ -145,8 +151,17 @@
 					'x' : this.touchProgression.x - this.touchOrigin.x,
 					'y' : this.touchProgression.y - this.touchOrigin.y
 				};
+				// if there was very little movement, but this is the second touch in quick successionif (
+				if (
+					this.lastTouch &&
+					Math.abs(this.touchOrigin.x - this.lastTouch.x) < 10 &&
+					Math.abs(this.touchOrigin.y - this.lastTouch.y) < 10 &&
+					new Date().getTime() - this.lastTouch.time < 300
+				) {
+					// treat this as a double tap
+					this.cfg.doubleTap({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'event' : event, 'source' : this.touchOrigin.target});
 				// if the horizontal motion was the largest
-				if (Math.abs(distance.x) > Math.abs(distance.y)) {
+				} else if (Math.abs(distance.x) > Math.abs(distance.y)) {
 					// if there was a right swipe
 					if (distance.x > this.cfg.threshold) {
 						// report the associated swipe
@@ -168,6 +183,12 @@
 						this.cfg.swipeUp({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : -distance.y, 'event' : event, 'source' : this.touchOrigin.target});
 					}
 				}
+				// store the history of this touch
+				this.lastTouch = {
+					'x' : this.touchOrigin.x,
+					'y' : this.touchOrigin.y,
+					'time' : new Date().getTime()
+				};
 			}
 			// clear the input
 			this.touchProgression = null;
@@ -196,16 +217,19 @@
 			}
 		};
 		this.startGesture = function (event) {
-			// note the start position
-			this.gestureOrigin = {
-				'scale' : event.scale,
-				'rotation' : event.rotation,
-				'target' : event.target || event.srcElement
-			};
-			this.gestureProgression = {
-				'scale' : this.gestureOrigin.scale,
-				'rotation' : this.gestureOrigin.rotation
-			};
+			// if the functionality wasn't paused
+			if (!this.paused) {
+				// note the start position
+				this.gestureOrigin = {
+					'scale' : event.scale,
+					'rotation' : event.rotation,
+					'target' : event.target || event.srcElement
+				};
+				this.gestureProgression = {
+					'scale' : this.gestureOrigin.scale,
+					'rotation' : this.gestureOrigin.rotation
+				};
+			}
 		};
 		this.changeGesture = function (event) {
 			// if there is an origin
@@ -537,13 +561,19 @@
 			this.ui.zoomIn = document.createElement('button');
 			this.ui.zoomIn.className = 'useful-zoom-in enabled';
 			this.ui.zoomIn.innerHTML = 'Zoom In';
-			this.ui.zoomIn.addEventListener('click', this.onZoom(1.5));
+			this.ui.zoomIn.addEventListener('touchstart', this.onSuspendTouch());
+			this.ui.zoomIn.addEventListener('mousedown', this.onSuspendTouch());
+			this.ui.zoomIn.addEventListener('touchend', this.onZoom(1.5));
+			this.ui.zoomIn.addEventListener('mouseup', this.onZoom(1.5));
 			this.obj.appendChild(this.ui.zoomIn);
 			// add the zoom out button
 			this.ui.zoomOut = document.createElement('button');
 			this.ui.zoomOut.className = 'useful-zoom-out disabled';
 			this.ui.zoomOut.innerHTML = 'Zoom Out';
-			this.ui.zoomOut.addEventListener('click', this.onZoom(0.75));
+			this.ui.zoomOut.addEventListener('touchstart', this.onSuspendTouch());
+			this.ui.zoomOut.addEventListener('mousedown', this.onSuspendTouch());
+			this.ui.zoomOut.addEventListener('touchend', this.onZoom(0.75));
+			this.ui.zoomOut.addEventListener('mouseup', this.onZoom(0.75));
 			this.obj.appendChild(this.ui.zoomOut);
 			// add the controls to the parent
 			this.parent.obj.appendChild(this.obj);
@@ -571,6 +601,8 @@
 			return function (evt) {
 				// cancel the click
 				evt.preventDefault();
+				// restore the touch events
+				_this.parent.gestures.paused = false;
 				// apply the zoom factor
 				var transformation = _this.parent.transformation,
 					dimensions = _this.parent.dimensions;
@@ -578,6 +610,16 @@
 				transformation.zoom = Math.max(Math.min(transformation.zoom * factor, dimensions.maxZoom), 1);
 				// redraw
 				_this.parent.redraw();
+			};
+		};
+
+		this.onSuspendTouch = function () {
+			var _this = this;
+			return function (evt) {
+				// cancel the click
+				evt.preventDefault();
+				// suspend touch events
+				_this.parent.gestures.paused = true;
 			};
 		};
 
@@ -670,8 +712,6 @@
 			this.area.top = Math.max(transformation.top - this.area.size / 2, 0);
 			this.area.right = Math.min(this.area.left + this.area.size, 1);
 			this.area.bottom = Math.min(this.area.top + this.area.size, 1);
-			// report the visible area
-			console.log('visible area: ', this.area);
 		};
 		this.clean = function () {
 			// for all existing tiles
@@ -696,9 +736,6 @@
 				startRow = Math.floor(this.area.top * rows),
 				endRow = Math.ceil(this.area.bottom * rows),
 				tileName;
-			// report the grid properties
-			console.log('grid - cols:', cols, startCol, endCol);
-			console.log('grid - rows:', rows, startRow, endRow);
 			// for every row of the grid
 			for (var row = startRow; row < endRow; row += 1) {
 				// for every column in the row
@@ -708,7 +745,6 @@
 					// if this is a new tile
 					if (this.tiles[tileName] === undefined) {
 						// create a new tile with the name and dimensions (name,index,zoom,left,top,right,bottom)
-						console.log('create tile:' + tileName);
 						this.tiles[tileName] = new useful.Zoom_Tile(this, {
 							'name' : tileName,
 							'index' : this.index,
@@ -819,7 +855,6 @@
 			this.parent.obj.appendChild(this.obj);
 		};
 		this.remove = function () {
-			console.log('removed:', this.name);
 			// remove the tile
 			this.obj.parentNode.removeChild(this.obj);
 			// remove  the reference
@@ -864,7 +899,7 @@
 		this.transformation = {
 			'left' : 0.5,
 			'top' : 0.5,
-			'zoom' : 2,
+			'zoom' : 1,
 			'rotate' : 0
 		};
 		this.dimensions = {
@@ -952,7 +987,8 @@
 				'swipeDown' : function (coords) {},
 				'drag' : this.onDrag(),
 				'pinch' : this.onPinch(),
-				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {}
+				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {},
+				'doubleTap' : this.onDoubleTap()
 			});
 			// cancel transitions afterwards
 			this.obj.addEventListener('transitionEnd', this.afterTransitions());
@@ -1009,6 +1045,18 @@
 				);
 			};
 		};
+		this.onDoubleTap = function () {
+			var _this = this;
+			return function (coords) {
+				coords.event.preventDefault();
+				_this.transform({
+					'left' : (coords.x / _this.dimensions.width - 0.5) + _this.transformation.left,
+					'top' : (coords.y / _this.dimensions.height - 0.5) + _this.transformation.top,
+					'zoom' : _this.transformation.zoom * 1.5
+				});
+				console.log('double tap:', coords, _this.dimensions);
+			};
+		};
 		this.afterTransitions = function () {
 			var _this = this;
 			return function () {
@@ -1020,10 +1068,10 @@
 
 		this.transform = function (transformation) {
 			// apply the transformation
-			this.transformation.left = Math.max(Math.min(transformation.left, 1), 0);
-			this.transformation.top = Math.max(Math.min(transformation.top, 1), 0);
-			this.transformation.zoom = Math.max(Math.min(transformation.zoom, this.dimensions.maxZoom), 1);
-			this.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0);
+			this.transformation.left = Math.max(Math.min(transformation.left, 1), 0) || this.transformation.left;
+			this.transformation.top = Math.max(Math.min(transformation.top, 1), 0) || this.transformation.top;
+			this.transformation.zoom = Math.max(Math.min(transformation.zoom, this.dimensions.maxZoom), 1) || this.transformation.zoom;
+			this.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0) || this.transformation.rotate;
 			// activate the transition
 			this.overlay.obj.className += ' useful-zoom-transition';
 			// trigger the transformation

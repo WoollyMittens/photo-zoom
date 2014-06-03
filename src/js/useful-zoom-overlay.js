@@ -79,8 +79,6 @@
 			this.area.top = Math.max(transformation.top - this.area.size / 2, 0);
 			this.area.right = Math.min(this.area.left + this.area.size, 1);
 			this.area.bottom = Math.min(this.area.top + this.area.size, 1);
-			// report the visible area
-			console.log('visible area: ', this.area);
 		};
 		this.clean = function () {
 			// for all existing tiles
@@ -105,9 +103,6 @@
 				startRow = Math.floor(this.area.top * rows),
 				endRow = Math.ceil(this.area.bottom * rows),
 				tileName;
-			// report the grid properties
-			console.log('grid - cols:', cols, startCol, endCol);
-			console.log('grid - rows:', rows, startRow, endRow);
 			// for every row of the grid
 			for (var row = startRow; row < endRow; row += 1) {
 				// for every column in the row
@@ -117,7 +112,6 @@
 					// if this is a new tile
 					if (this.tiles[tileName] === undefined) {
 						// create a new tile with the name and dimensions (name,index,zoom,left,top,right,bottom)
-						console.log('create tile:' + tileName);
 						this.tiles[tileName] = new useful.Zoom_Tile(this, {
 							'name' : tileName,
 							'index' : this.index,

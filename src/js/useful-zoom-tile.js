@@ -84,7 +84,6 @@
 			this.parent.obj.appendChild(this.obj);
 		};
 		this.remove = function () {
-			console.log('removed:', this.name);
 			// remove the tile
 			this.obj.parentNode.removeChild(this.obj);
 			// remove  the reference
