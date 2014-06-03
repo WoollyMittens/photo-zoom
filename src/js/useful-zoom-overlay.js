@@ -58,17 +58,21 @@
 			// repopulate the tiles after interaction stops
 			clearTimeout(this.timeout);
 			this.timeout = setTimeout(function () {
-				// recalculate the visible are
+				// update the parent
+				_this.parent.update();
+				// recalculate the visible area
 				_this.measure();
 				// clean out the older tiles
 				_this.clean();
 				// populate with new tile
 				_this.populate();
-			}, 500);
+			}, 300);
 		};
 		this.measure = function () {
 			// get the desired transformation
 			var transformation = this.parent.transformation;
+			// report the transformation
+			console.log('transformation:', transformation);
 			// calculate the visible area
 			this.area.size = 1 / transformation.zoom;
 			this.area.left = Math.max(transformation.left - this.area.size / 2, 0);

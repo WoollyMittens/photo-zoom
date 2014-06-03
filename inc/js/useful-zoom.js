@@ -518,6 +518,89 @@
 
 	"use strict";
 
+	useful.Zoom_Controls = function (parent) {
+
+		// PROPERTIES
+
+		this.parent = parent;
+		this.cfg = parent.cfg;
+		this.obj = null;
+		this.ui = {};
+
+		// METHODS
+
+		this.start = function () {
+			// create a controls
+			this.obj = document.createElement('menu');
+			this.obj.className = 'useful-zoom-controls';
+			// add the zoom in button
+			this.ui.zoomIn = document.createElement('button');
+			this.ui.zoomIn.className = 'useful-zoom-in enabled';
+			this.ui.zoomIn.innerHTML = 'Zoom In';
+			this.ui.zoomIn.addEventListener('click', this.onZoom(1.5));
+			this.obj.appendChild(this.ui.zoomIn);
+			// add the zoom out button
+			this.ui.zoomOut = document.createElement('button');
+			this.ui.zoomOut.className = 'useful-zoom-out disabled';
+			this.ui.zoomOut.innerHTML = 'Zoom Out';
+			this.ui.zoomOut.addEventListener('click', this.onZoom(0.75));
+			this.obj.appendChild(this.ui.zoomOut);
+			// add the controls to the parent
+			this.parent.obj.appendChild(this.obj);
+		};
+
+		this.redraw = function () {
+			var zoomIn = this.ui.zoomIn,
+				zoomOut = this.ui.zoomOut,
+				dimensions = this.parent.dimensions,
+				transformation = this.parent.transformation;
+			// disable the zoom in button at max zoom
+			zoomIn.className = (transformation.zoom < dimensions.maxZoom) ?
+				zoomIn.className.replace('disabled', 'enabled'):
+				zoomIn.className.replace('enabled', 'disabled');
+			// disable the zoom out button at min zoom
+			zoomOut.className = (transformation.zoom > 1) ?
+				zoomOut.className.replace('disabled', 'enabled'):
+				zoomOut.className.replace('enabled', 'disabled');
+		};
+
+		// EVENTS
+
+		this.onZoom = function (factor) {
+			var _this = this;
+			return function (evt) {
+				// cancel the click
+				evt.preventDefault();
+				// apply the zoom factor
+				var transformation = _this.parent.transformation,
+					dimensions = _this.parent.dimensions;
+				// apply the zoom factor to the transformation
+				transformation.zoom = Math.max(Math.min(transformation.zoom * factor, dimensions.maxZoom), 1);
+				// redraw
+				_this.parent.redraw();
+			};
+		};
+
+		// STARTUP
+
+		this.start();
+
+	};
+
+}(window.useful = window.useful || {}));
+
+/*
+	Source:
+	van Creij, Maurice (2014). "useful.zoom.js: Pan and Zoom an Image", version 20140528, http://www.woollymittens.nl/.
+
+	License:
+	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+*/
+
+(function (useful) {
+
+	"use strict";
+
 	useful.Zoom_Overlay = function (parent) {
 
 		// PROPERTIES
@@ -566,17 +649,21 @@
 			// repopulate the tiles after interaction stops
 			clearTimeout(this.timeout);
 			this.timeout = setTimeout(function () {
-				// recalculate the visible are
+				// update the parent
+				_this.parent.update();
+				// recalculate the visible area
 				_this.measure();
 				// clean out the older tiles
 				_this.clean();
 				// populate with new tile
 				_this.populate();
-			}, 500);
+			}, 300);
 		};
 		this.measure = function () {
 			// get the desired transformation
 			var transformation = this.parent.transformation;
+			// report the transformation
+			console.log('transformation:', transformation);
 			// calculate the visible area
 			this.area.size = 1 / transformation.zoom;
 			this.area.left = Math.max(transformation.left - this.area.size / 2, 0);
@@ -773,6 +860,7 @@
 
 		this.obj = obj;
 		this.cfg = cfg;
+		// TODO: move these into the model (cfg) to pass on to sub-components
 		this.transformation = {
 			'left' : 0.5,
 			'top' : 0.5,
@@ -799,7 +887,8 @@
 			this.applyStyling();
 			// build the overlay
 			this.overlay = new useful.Zoom_Overlay(this);
-			// TODO: build the controls
+			// build the controls
+			this.controls = new useful.Zoom_Controls(this);
 			// add the events
 			this.addEvents();
 			// first redraw
@@ -810,9 +899,14 @@
 		this.redraw = function () {
 			// measure the dimensions, maximum zoom and aspect ratio
 			this.measureDimensions();
-			// TODO: redraw the controls
+			// redraw the controls
+			this.controls.redraw();
 			// redraw the overlay
 			this.overlay.redraw();
+		};
+		this.update = function () {
+			// redraw the controls
+			this.controls.redraw();
 		};
 		this.applyStyling = function () {
 			// create a custom stylesheet
@@ -823,23 +917,23 @@
 			// add the custom styles
 			if (sheet.insertRule) {
 				if (this.cfg.colorPassive) {
-					sheet.insertRule(".useful-zoom button {background-color : " + this.cfg.colorPassive + " !important;}", 0);
+					sheet.insertRule(".useful-zoom-controls button {background-color : " + this.cfg.colorPassive + " !important;}", 0);
 				}
 				if (this.cfg.colorHover) {
-					sheet.insertRule(".useful-zoom button:hover, .useful-zoom button:active {background-color : " + this.cfg.colorHover + " !important;}", 0);
+					sheet.insertRule(".useful-zoom-controls button:hover, .useful-zoom button:active {background-color : " + this.cfg.colorHover + " !important;}", 0);
 				}
 				if (this.cfg.colorDisabled) {
-					sheet.insertRule(".useful-zoom button.disabled {background-color : " + this.cfg.colorDisabled + " !important;}", 0);
+					sheet.insertRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover {background-color : " + this.cfg.colorDisabled + " !important;}", 0);
 				}
 			} else {
 				if (this.cfg.colorPassive) {
-					sheet.addRule(".useful-zoom button", "background-color : " + this.cfg.colorPassive + " !important;", 0);
+					sheet.addRule(".useful-zoom-controls button", "background-color : " + this.cfg.colorPassive + " !important;", 0);
 				}
 				if (this.cfg.colorHover) {
-					sheet.addRule(".useful-zoom button:hover, .useful-zoom button:active", "background-color : " + this.cfg.colorHover + " !important;", 0);
+					sheet.addRule(".useful-zoom-controls button:hover, .useful-zoom button:active", "background-color : " + this.cfg.colorHover + " !important;", 0);
 				}
 				if (this.cfg.colorDisabled) {
-					sheet.addRule(".useful-zoom button.disabled", "background-color : " + this.cfg.colorDisabled + " !important;", 0);
+					sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.cfg.colorDisabled + " !important;", 0);
 				}
 			}
 		};
@@ -860,6 +954,9 @@
 				'pinch' : this.onPinch(),
 				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {}
 			});
+			// cancel transitions afterwards
+			this.obj.addEventListener('transitionEnd', this.afterTransitions());
+			this.obj.addEventListener('webkitTransitionEnd', this.afterTransitions());
 		};
 		this.measureDimensions = function () {
 			// get the original link
@@ -912,30 +1009,62 @@
 				);
 			};
 		};
+		this.afterTransitions = function () {
+			var _this = this;
+			return function () {
+				_this.overlay.obj.className = _this.overlay.obj.className.replace(/useful-zoom-transition| useful-zoom-transition/g, '');
+			};
+		};
 
 		// PUBLIC
 
+		this.transform = function (transformation) {
+			// apply the transformation
+			this.transformation.left = Math.max(Math.min(transformation.left, 1), 0);
+			this.transformation.top = Math.max(Math.min(transformation.top, 1), 0);
+			this.transformation.zoom = Math.max(Math.min(transformation.zoom, this.dimensions.maxZoom), 1);
+			this.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0);
+			// activate the transition
+			this.overlay.obj.className += ' useful-zoom-transition';
+			// trigger the transformation
+			var _this = this;
+			setTimeout(function () { _this.overlay.redraw(); }, 0);
+		};
 		this.moveBy = function (x,y) {
+			this.moveTo(
+				this.transformation.left - x,
+				this.transformation.top - y
+			);
+		};
+		this.moveTo = function (x,y) {
 			// apply the translation
-			this.transformation.left -= x;
-			this.transformation.top -= y;
+			this.transformation.left = x;
+			this.transformation.top = y;
 			// apply the limits
 			this.transformation.left = Math.max(Math.min(this.transformation.left, 1), 0);
 			this.transformation.top = Math.max(Math.min(this.transformation.top, 1), 0);
 			// redraw the display
 			this.overlay.redraw();
 		};
-		this.moveTo = function (x,y) {};
 		this.zoomBy = function (z) {
+			this.zoomTo(
+				this.transformation.zoom + z
+			);
+		};
+		this.zoomTo = function (z) {
 			// apply the translation
-			this.transformation.zoom += z;
+			this.transformation.zoom = z;
 			// apply the limits
 			this.transformation.zoom = Math.max(Math.min(this.transformation.zoom, this.dimensions.maxZoom), 1);
 			// redraw the display
 			this.overlay.redraw();
 		};
-		this.zoomTo = function (z) {};
 		this.rotateBy = function (r) {
+			this.rotateTo(
+				this.transformation.rotate + r
+			);
+		};
+		this.rotateTo = function (r) {
 			// apply the translation
 			this.transformation.rotate += r;
 			// apply the limits
@@ -943,7 +1072,6 @@
 			// redraw the display
 			this.overlay.redraw();
 		};
-		this.rotateTo = function (r) {};
 
 		// STARTUP
 

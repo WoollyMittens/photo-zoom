@@ -16,6 +16,7 @@
 
 		this.obj = obj;
 		this.cfg = cfg;
+		// TODO: move these into the model (cfg) to pass on to sub-components
 		this.transformation = {
 			'left' : 0.5,
 			'top' : 0.5,
@@ -42,7 +43,8 @@
 			this.applyStyling();
 			// build the overlay
 			this.overlay = new useful.Zoom_Overlay(this);
-			// TODO: build the controls
+			// build the controls
+			this.controls = new useful.Zoom_Controls(this);
 			// add the events
 			this.addEvents();
 			// first redraw
@@ -53,9 +55,14 @@
 		this.redraw = function () {
 			// measure the dimensions, maximum zoom and aspect ratio
 			this.measureDimensions();
-			// TODO: redraw the controls
+			// redraw the controls
+			this.controls.redraw();
 			// redraw the overlay
 			this.overlay.redraw();
+		};
+		this.update = function () {
+			// redraw the controls
+			this.controls.redraw();
 		};
 		this.applyStyling = function () {
 			// create a custom stylesheet
@@ -66,23 +73,23 @@
 			// add the custom styles
 			if (sheet.insertRule) {
 				if (this.cfg.colorPassive) {
-					sheet.insertRule(".useful-zoom button {background-color : " + this.cfg.colorPassive + " !important;}", 0);
+					sheet.insertRule(".useful-zoom-controls button {background-color : " + this.cfg.colorPassive + " !important;}", 0);
 				}
 				if (this.cfg.colorHover) {
-					sheet.insertRule(".useful-zoom button:hover, .useful-zoom button:active {background-color : " + this.cfg.colorHover + " !important;}", 0);
+					sheet.insertRule(".useful-zoom-controls button:hover, .useful-zoom button:active {background-color : " + this.cfg.colorHover + " !important;}", 0);
 				}
 				if (this.cfg.colorDisabled) {
-					sheet.insertRule(".useful-zoom button.disabled {background-color : " + this.cfg.colorDisabled + " !important;}", 0);
+					sheet.insertRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover {background-color : " + this.cfg.colorDisabled + " !important;}", 0);
 				}
 			} else {
 				if (this.cfg.colorPassive) {
-					sheet.addRule(".useful-zoom button", "background-color : " + this.cfg.colorPassive + " !important;", 0);
+					sheet.addRule(".useful-zoom-controls button", "background-color : " + this.cfg.colorPassive + " !important;", 0);
 				}
 				if (this.cfg.colorHover) {
-					sheet.addRule(".useful-zoom button:hover, .useful-zoom button:active", "background-color : " + this.cfg.colorHover + " !important;", 0);
+					sheet.addRule(".useful-zoom-controls button:hover, .useful-zoom button:active", "background-color : " + this.cfg.colorHover + " !important;", 0);
 				}
 				if (this.cfg.colorDisabled) {
-					sheet.addRule(".useful-zoom button.disabled", "background-color : " + this.cfg.colorDisabled + " !important;", 0);
+					sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.cfg.colorDisabled + " !important;", 0);
 				}
 			}
 		};
@@ -103,6 +110,9 @@
 				'pinch' : this.onPinch(),
 				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {}
 			});
+			// cancel transitions afterwards
+			this.obj.addEventListener('transitionEnd', this.afterTransitions());
+			this.obj.addEventListener('webkitTransitionEnd', this.afterTransitions());
 		};
 		this.measureDimensions = function () {
 			// get the original link
@@ -155,30 +165,62 @@
 				);
 			};
 		};
+		this.afterTransitions = function () {
+			var _this = this;
+			return function () {
+				_this.overlay.obj.className = _this.overlay.obj.className.replace(/useful-zoom-transition| useful-zoom-transition/g, '');
+			};
+		};
 
 		// PUBLIC
 
+		this.transform = function (transformation) {
+			// apply the transformation
+			this.transformation.left = Math.max(Math.min(transformation.left, 1), 0);
+			this.transformation.top = Math.max(Math.min(transformation.top, 1), 0);
+			this.transformation.zoom = Math.max(Math.min(transformation.zoom, this.dimensions.maxZoom), 1);
+			this.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0);
+			// activate the transition
+			this.overlay.obj.className += ' useful-zoom-transition';
+			// trigger the transformation
+			var _this = this;
+			setTimeout(function () { _this.overlay.redraw(); }, 0);
+		};
 		this.moveBy = function (x,y) {
+			this.moveTo(
+				this.transformation.left - x,
+				this.transformation.top - y
+			);
+		};
+		this.moveTo = function (x,y) {
 			// apply the translation
-			this.transformation.left -= x;
-			this.transformation.top -= y;
+			this.transformation.left = x;
+			this.transformation.top = y;
 			// apply the limits
 			this.transformation.left = Math.max(Math.min(this.transformation.left, 1), 0);
 			this.transformation.top = Math.max(Math.min(this.transformation.top, 1), 0);
 			// redraw the display
 			this.overlay.redraw();
 		};
-		this.moveTo = function (x,y) {};
 		this.zoomBy = function (z) {
+			this.zoomTo(
+				this.transformation.zoom + z
+			);
+		};
+		this.zoomTo = function (z) {
 			// apply the translation
-			this.transformation.zoom += z;
+			this.transformation.zoom = z;
 			// apply the limits
 			this.transformation.zoom = Math.max(Math.min(this.transformation.zoom, this.dimensions.maxZoom), 1);
 			// redraw the display
 			this.overlay.redraw();
 		};
-		this.zoomTo = function (z) {};
 		this.rotateBy = function (r) {
+			this.rotateTo(
+				this.transformation.rotate + r
+			);
+		};
+		this.rotateTo = function (r) {
 			// apply the translation
 			this.transformation.rotate += r;
 			// apply the limits
@@ -186,7 +228,6 @@
 			// redraw the display
 			this.overlay.redraw();
 		};
-		this.rotateTo = function (r) {};
 
 		// STARTUP
 
