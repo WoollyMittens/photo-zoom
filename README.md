@@ -21,27 +21,101 @@ This include can be added to the header or placed inline before the script is in
 ## How to start the script
 
 ```javascript
-var zoom = new useful.Zoom( document.getElementById('id'), {
-	name : value
+var zoom = new useful.Zoom( document.getElementById('zoom'), {
+	'tileSource' : 'inc/php/imageslice.php?src=../../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
+	'tileCache' : 128,
+	'tileSize' : 128,
+	'allowRotation' : false
 });
 ```
 
-**name : {type}**
-+ *value* - Explanation.
-+ *value* - Explanation.
-+ *evalue* - Explanation.
+**tileSource : {url}** - A webservice that provides image tiles (PHP example included).
+
+**tileCache : {integer}** - The amount of tiles that can be active at one time. Reduce this to save memory at the expense of bandwidth.
+
+**tileSize : {integer}** - The horizontal and vertical size of each tile in pixels.
+
+**allowRotation : {boolean}** - Enable or disable rotation as well as pan and zoom.
 
 ## How to control the script
 
-### Lorem
+### Transform
 
 ```javascript
-zoom.lorem(value);
+zoom.transform(transformation);
 ```
 
-Explanation.
+Applies a set of transformations all at once in an animated manner.
 
-**value : {type}** - Explanation.
+**transformation : {left, top, zoom, rotate}** - An object containing transformations to apply at once.
++ *left* - Offset from the left as a fraction between 0 and 1.
++ *top* - Offset from the top as a fraction between 0 and 1.
++ *zoom* - Zoom factor.
++ *rotate* - Rotation in degrees.
+
+### moveBy
+
+```javascript
+zoom.moveBy(x,y);
+```
+
+Moves the canvas by a set distance instantly.
+
+**x : {float}** - Offset from the left as a fraction between 0 and 1.
+
+**y : {float}** - Offset from the top as a fraction between 0 and 1.
+
+### moveTo
+
+```javascript
+zoom.moveTo(x,y);
+```
+
+Moves the canvas to a set position instantly.
+
+**x : {float}** - Offset from the left as a fraction between 0 and 1.
+
+**y : {float}** - Offset from the top as a fraction between 0 and 1.
+
+### zoomBy
+
+```javascript
+zoom.zoomBy(factor);
+```
+
+Magnifies the canvas by a set distance instantly.
+
+**factor : {float}** - Zoom factor between 1 and as high as the bitmap allows.
+
+### zoomTo
+
+```javascript
+zoom.zoomTo(factor);
+```
+
+Magnifies the canvas to a set position instantly.
+
+**factor : {float}** - Zoom factor between 1 and as high as the bitmap allows.
+
+### rotateBy
+
+```javascript
+zoom.rotateBy(angle);
+```
+
+Rotates the canvas by a set number of degrees.
+
+**angle : {float}** - A rotation between 0 and 359.
+
+### rotateTo
+
+```javascript
+zoom.rotateTo(angle);
+```
+
+Rotates the canvas to a set number of degrees.
+
+**angle : {float}** - A rotation between 0 and 359.
 
 ## How to build the script
 
