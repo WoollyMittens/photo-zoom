@@ -153,7 +153,7 @@
 			return function (coords) {
 				// calculate the magnification
 				_this.zoomBy(
-					coords.scale
+					coords.scale * _this.transformation.zoom
 				);
 			};
 		};

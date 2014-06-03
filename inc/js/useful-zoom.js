@@ -1032,7 +1032,7 @@
 			return function (coords) {
 				// calculate the magnification
 				_this.zoomBy(
-					coords.scale
+					coords.scale * _this.transformation.zoom
 				);
 			};
 		};
@@ -1049,6 +1049,7 @@
 			var _this = this;
 			return function (coords) {
 				coords.event.preventDefault();
+				// calculate the zoom
 				_this.transform({
 					'left' : (coords.x / _this.dimensions.width - 0.5) + _this.transformation.left,
 					'top' : (coords.y / _this.dimensions.height - 0.5) + _this.transformation.top,
