@@ -1051,8 +1051,8 @@
 				coords.event.preventDefault();
 				// calculate the zoom
 				_this.transform({
-					'left' : (coords.x / _this.dimensions.width - 0.5) + _this.transformation.left,
-					'top' : (coords.y / _this.dimensions.height - 0.5) + _this.transformation.top,
+					'left' : (coords.x / _this.dimensions.width - 0.5) / _this.transformation.zoom + _this.transformation.left,
+					'top' : (coords.y / _this.dimensions.height - 0.5) / _this.transformation.zoom + _this.transformation.top,
 					'zoom' : _this.transformation.zoom * 1.5
 				});
 				console.log('double tap:', coords, _this.dimensions);
