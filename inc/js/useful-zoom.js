@@ -176,12 +176,14 @@
 		this.changeWheel = function (event) {
 			// measure the wheel distance
 			var scale = 1, distance = ((window.event) ? window.event.wheelDelta / 120 : -event.detail / 3);
+			// get the coordinates from the event
+			var coords = this.readEvent(event);
 			// equate wheeling up / down to zooming in / out
 			scale = (distance > 0) ? +this.cfg.increment : scale = -this.cfg.increment;
 			// report the zoom
 			this.cfg.pinch({
-				'x' : 0,
-				'y' : 0,
+				'x' : coords.x,
+				'y' : coords.y,
 				'scale' : scale,
 				'event' : event,
 				'source' : event.target || event.srcElement
