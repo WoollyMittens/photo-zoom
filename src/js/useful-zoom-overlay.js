@@ -15,45 +15,47 @@
 		// PROPERTIES
 
 		this.parent = parent;
-		this.cfg = parent.cfg;
-		this.obj = null;
+		this.model = parent.model;
+
+		this.element = null;
 		this.timeout = null;
 		this.tiles = {};
 		this.index = 0;
-		this.area = {};
+		this.updated = 0;
+		this.model.area = {};
 
 		// METHODS
 
 		this.start = function () {
 			// get the original image
-			var image = this.parent.obj.getElementsByTagName('img')[0];
+			var image = this.parent.element.getElementsByTagName('img')[0];
 			// create an overlay
-			this.obj = document.createElement('div');
-			this.obj.className = 'useful-zoom-overlay';
+			this.element = document.createElement('div');
+			this.element.className = 'useful-zoom-overlay';
 			// add the image as a background
-			this.obj.style.backgroundImage = 'url(' + image.getAttribute('src') + ')';
+			this.element.style.backgroundImage = 'url(' + image.getAttribute('src') + ')';
 			// put the overlay into the parent object
-			this.parent.obj.appendChild(this.obj);
+			this.parent.element.appendChild(this.element);
 			// hide the original image
 			image.style.visibility = 'hidden';
 		};
 		this.redraw = function () {
 			// get the transformation settings from the parent object
-			var _this = this, transformation = this.parent.transformation;
+			var _this = this, transformation = this.model.transformation;
 			// if the last redraw occurred sufficiently long ago
 			var updated = new Date().getTime();
-			if (updated - this.parent.updated > 20) {
+			if (updated - this.updated > 20) {
 				// store the time of this redraw
-				this.parent.updated = updated;
+				this.updated = updated;
 				// formulate a css transformation
 				var styleTransform = 'scaleX(' + transformation.zoom +') scaleY(' + transformation.zoom +') rotateZ(' + transformation.rotate + 'deg)';
 				var styleOrigin = (transformation.left * 100) + '% ' + (transformation.top * 100) + '%';
 				// re-centre the origin
-				this.obj.style.WebkitTransformOrigin = styleOrigin;
-				this.obj.style.transformOrigin = styleOrigin;
+				this.element.style.WebkitTransformOrigin = styleOrigin;
+				this.element.style.transformOrigin = styleOrigin;
 				// implement the style
-				this.obj.style.WebkitTransform = styleTransform;
-				this.obj.style.transform = styleTransform;
+				this.element.style.WebkitTransform = styleTransform;
+				this.element.style.transform = styleTransform;
 			}
 			// repopulate the tiles after interaction stops
 			clearTimeout(this.timeout);
@@ -70,15 +72,16 @@
 		};
 		this.measure = function () {
 			// get the desired transformation
-			var transformation = this.parent.transformation;
+			var transformation = this.model.transformation,
+				area = this.model.area;
 			// report the transformation
 			console.log('transformation:', transformation);
 			// calculate the visible area
-			this.area.size = 1 / transformation.zoom;
-			this.area.left = Math.max(transformation.left - this.area.size / 2, 0);
-			this.area.top = Math.max(transformation.top - this.area.size / 2, 0);
-			this.area.right = Math.min(this.area.left + this.area.size, 1);
-			this.area.bottom = Math.min(this.area.top + this.area.size, 1);
+			area.size = 1 / transformation.zoom;
+			area.left = Math.max(transformation.left - area.size / 2, 0);
+			area.top = Math.max(transformation.top - area.size / 2, 0);
+			area.right = Math.min(area.left + area.size, 1);
+			area.bottom = Math.min(area.top + area.size, 1);
 		};
 		this.clean = function () {
 			// for all existing tiles
@@ -91,17 +94,17 @@
 		};
 		this.populate = function () {
 			// get the component's dimensions
-			var dimensions = this.parent.dimensions,
-				transformation = this.parent.transformation,
-				cfg = this.parent.cfg;
+			var dimensions = this.model.dimensions,
+				transformation = this.model.transformation,
+				area = this.model.area;
 			// calculate the grid size at this magnification
-			var cols = dimensions.width * transformation.zoom / cfg.tileSize,
-				rows = dimensions.height * transformation.zoom / cfg.tileSize,
+			var cols = dimensions.width * transformation.zoom / this.model.tileSize,
+				rows = dimensions.height * transformation.zoom / this.model.tileSize,
 				zoom = Math.ceil(transformation.zoom),
-				startCol = Math.max( Math.floor( this.area.left * cols ) - 1, 0 ),
-				endCol = Math.min( Math.ceil( this.area.right * cols ) + 1, cols ),
-				startRow = Math.max( Math.floor( this.area.top * rows ) - 1, 0 ),
-				endRow = Math.min( Math.ceil( this.area.bottom * rows ) + 1, rows ),
+				startCol = Math.max( Math.floor( area.left * cols ) - 1, 0 ),
+				endCol = Math.min( Math.ceil( area.right * cols ) + 1, cols ),
+				startRow = Math.max( Math.floor( area.top * rows ) - 1, 0 ),
+				endRow = Math.min( Math.ceil( area.bottom * rows ) + 1, rows ),
 				tileName;
 			// for every row of the grid
 			for (var row = startRow; row < endRow; row += 1) {

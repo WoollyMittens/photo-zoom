@@ -15,43 +15,45 @@
 		// PROPERTIES
 
 		this.parent = parent;
-		this.cfg = parent.cfg;
-		this.obj = null;
-		this.ui = {};
+		this.model = parent.model;
+
+		this.element = null;
+		this.zoomIn = null;
+		this.zoomOut = null;
 
 		// METHODS
 
 		this.start = function () {
 			// create a controls
-			this.obj = document.createElement('menu');
-			this.obj.className = 'useful-zoom-controls';
+			this.element = document.createElement('menu');
+			this.element.className = 'useful-zoom-controls';
 			// add the zoom in button
-			this.ui.zoomIn = document.createElement('button');
-			this.ui.zoomIn.className = 'useful-zoom-in enabled';
-			this.ui.zoomIn.innerHTML = 'Zoom In';
-			this.ui.zoomIn.addEventListener('touchstart', this.onSuspendTouch());
-			this.ui.zoomIn.addEventListener('mousedown', this.onSuspendTouch());
-			this.ui.zoomIn.addEventListener('touchend', this.onZoom(1.5));
-			this.ui.zoomIn.addEventListener('mouseup', this.onZoom(1.5));
-			this.obj.appendChild(this.ui.zoomIn);
+			this.zoomIn = document.createElement('button');
+			this.zoomIn.className = 'useful-zoom-in enabled';
+			this.zoomIn.innerHTML = 'Zoom In';
+			this.zoomIn.addEventListener('touchstart', this.onSuspendTouch());
+			this.zoomIn.addEventListener('mousedown', this.onSuspendTouch());
+			this.zoomIn.addEventListener('touchend', this.onZoom(1.5));
+			this.zoomIn.addEventListener('mouseup', this.onZoom(1.5));
+			this.element.appendChild(this.zoomIn);
 			// add the zoom out button
-			this.ui.zoomOut = document.createElement('button');
-			this.ui.zoomOut.className = 'useful-zoom-out disabled';
-			this.ui.zoomOut.innerHTML = 'Zoom Out';
-			this.ui.zoomOut.addEventListener('touchstart', this.onSuspendTouch());
-			this.ui.zoomOut.addEventListener('mousedown', this.onSuspendTouch());
-			this.ui.zoomOut.addEventListener('touchend', this.onZoom(0.75));
-			this.ui.zoomOut.addEventListener('mouseup', this.onZoom(0.75));
-			this.obj.appendChild(this.ui.zoomOut);
+			this.zoomOut = document.createElement('button');
+			this.zoomOut.className = 'useful-zoom-out disabled';
+			this.zoomOut.innerHTML = 'Zoom Out';
+			this.zoomOut.addEventListener('touchstart', this.onSuspendTouch());
+			this.zoomOut.addEventListener('mousedown', this.onSuspendTouch());
+			this.zoomOut.addEventListener('touchend', this.onZoom(0.75));
+			this.zoomOut.addEventListener('mouseup', this.onZoom(0.75));
+			this.element.appendChild(this.zoomOut);
 			// add the controls to the parent
-			this.parent.obj.appendChild(this.obj);
+			this.parent.element.appendChild(this.element);
 		};
 
 		this.redraw = function () {
-			var zoomIn = this.ui.zoomIn,
-				zoomOut = this.ui.zoomOut,
-				dimensions = this.parent.dimensions,
-				transformation = this.parent.transformation;
+			var zoomIn = this.zoomIn,
+				zoomOut = this.zoomOut,
+				dimensions = this.model.dimensions,
+				transformation = this.model.transformation;
 			// disable the zoom in button at max zoom
 			zoomIn.className = (transformation.zoom < dimensions.maxZoom) ?
 				zoomIn.className.replace('disabled', 'enabled'):
@@ -72,8 +74,8 @@
 				// restore the touch events
 				_this.parent.gestures.paused = false;
 				// apply the zoom factor
-				var transformation = _this.parent.transformation,
-					dimensions = _this.parent.dimensions;
+				var transformation = _this.model.transformation,
+					dimensions = _this.model.dimensions;
 				// apply the zoom factor to the transformation
 				transformation.zoom = Math.max(Math.min(transformation.zoom * factor, dimensions.maxZoom), 1);
 				// redraw

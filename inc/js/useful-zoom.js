@@ -547,43 +547,45 @@
 		// PROPERTIES
 
 		this.parent = parent;
-		this.cfg = parent.cfg;
-		this.obj = null;
-		this.ui = {};
+		this.model = parent.model;
+
+		this.element = null;
+		this.zoomIn = null;
+		this.zoomOut = null;
 
 		// METHODS
 
 		this.start = function () {
 			// create a controls
-			this.obj = document.createElement('menu');
-			this.obj.className = 'useful-zoom-controls';
+			this.element = document.createElement('menu');
+			this.element.className = 'useful-zoom-controls';
 			// add the zoom in button
-			this.ui.zoomIn = document.createElement('button');
-			this.ui.zoomIn.className = 'useful-zoom-in enabled';
-			this.ui.zoomIn.innerHTML = 'Zoom In';
-			this.ui.zoomIn.addEventListener('touchstart', this.onSuspendTouch());
-			this.ui.zoomIn.addEventListener('mousedown', this.onSuspendTouch());
-			this.ui.zoomIn.addEventListener('touchend', this.onZoom(1.5));
-			this.ui.zoomIn.addEventListener('mouseup', this.onZoom(1.5));
-			this.obj.appendChild(this.ui.zoomIn);
+			this.zoomIn = document.createElement('button');
+			this.zoomIn.className = 'useful-zoom-in enabled';
+			this.zoomIn.innerHTML = 'Zoom In';
+			this.zoomIn.addEventListener('touchstart', this.onSuspendTouch());
+			this.zoomIn.addEventListener('mousedown', this.onSuspendTouch());
+			this.zoomIn.addEventListener('touchend', this.onZoom(1.5));
+			this.zoomIn.addEventListener('mouseup', this.onZoom(1.5));
+			this.element.appendChild(this.zoomIn);
 			// add the zoom out button
-			this.ui.zoomOut = document.createElement('button');
-			this.ui.zoomOut.className = 'useful-zoom-out disabled';
-			this.ui.zoomOut.innerHTML = 'Zoom Out';
-			this.ui.zoomOut.addEventListener('touchstart', this.onSuspendTouch());
-			this.ui.zoomOut.addEventListener('mousedown', this.onSuspendTouch());
-			this.ui.zoomOut.addEventListener('touchend', this.onZoom(0.75));
-			this.ui.zoomOut.addEventListener('mouseup', this.onZoom(0.75));
-			this.obj.appendChild(this.ui.zoomOut);
+			this.zoomOut = document.createElement('button');
+			this.zoomOut.className = 'useful-zoom-out disabled';
+			this.zoomOut.innerHTML = 'Zoom Out';
+			this.zoomOut.addEventListener('touchstart', this.onSuspendTouch());
+			this.zoomOut.addEventListener('mousedown', this.onSuspendTouch());
+			this.zoomOut.addEventListener('touchend', this.onZoom(0.75));
+			this.zoomOut.addEventListener('mouseup', this.onZoom(0.75));
+			this.element.appendChild(this.zoomOut);
 			// add the controls to the parent
-			this.parent.obj.appendChild(this.obj);
+			this.parent.element.appendChild(this.element);
 		};
 
 		this.redraw = function () {
-			var zoomIn = this.ui.zoomIn,
-				zoomOut = this.ui.zoomOut,
-				dimensions = this.parent.dimensions,
-				transformation = this.parent.transformation;
+			var zoomIn = this.zoomIn,
+				zoomOut = this.zoomOut,
+				dimensions = this.model.dimensions,
+				transformation = this.model.transformation;
 			// disable the zoom in button at max zoom
 			zoomIn.className = (transformation.zoom < dimensions.maxZoom) ?
 				zoomIn.className.replace('disabled', 'enabled'):
@@ -604,8 +606,8 @@
 				// restore the touch events
 				_this.parent.gestures.paused = false;
 				// apply the zoom factor
-				var transformation = _this.parent.transformation,
-					dimensions = _this.parent.dimensions;
+				var transformation = _this.model.transformation,
+					dimensions = _this.model.dimensions;
 				// apply the zoom factor to the transformation
 				transformation.zoom = Math.max(Math.min(transformation.zoom * factor, dimensions.maxZoom), 1);
 				// redraw
@@ -648,45 +650,47 @@
 		// PROPERTIES
 
 		this.parent = parent;
-		this.cfg = parent.cfg;
-		this.obj = null;
+		this.model = parent.model;
+
+		this.element = null;
 		this.timeout = null;
 		this.tiles = {};
 		this.index = 0;
-		this.area = {};
+		this.updated = 0;
+		this.model.area = {};
 
 		// METHODS
 
 		this.start = function () {
 			// get the original image
-			var image = this.parent.obj.getElementsByTagName('img')[0];
+			var image = this.parent.element.getElementsByTagName('img')[0];
 			// create an overlay
-			this.obj = document.createElement('div');
-			this.obj.className = 'useful-zoom-overlay';
+			this.element = document.createElement('div');
+			this.element.className = 'useful-zoom-overlay';
 			// add the image as a background
-			this.obj.style.backgroundImage = 'url(' + image.getAttribute('src') + ')';
+			this.element.style.backgroundImage = 'url(' + image.getAttribute('src') + ')';
 			// put the overlay into the parent object
-			this.parent.obj.appendChild(this.obj);
+			this.parent.element.appendChild(this.element);
 			// hide the original image
 			image.style.visibility = 'hidden';
 		};
 		this.redraw = function () {
 			// get the transformation settings from the parent object
-			var _this = this, transformation = this.parent.transformation;
+			var _this = this, transformation = this.model.transformation;
 			// if the last redraw occurred sufficiently long ago
 			var updated = new Date().getTime();
-			if (updated - this.parent.updated > 20) {
+			if (updated - this.updated > 20) {
 				// store the time of this redraw
-				this.parent.updated = updated;
+				this.updated = updated;
 				// formulate a css transformation
 				var styleTransform = 'scaleX(' + transformation.zoom +') scaleY(' + transformation.zoom +') rotateZ(' + transformation.rotate + 'deg)';
 				var styleOrigin = (transformation.left * 100) + '% ' + (transformation.top * 100) + '%';
 				// re-centre the origin
-				this.obj.style.WebkitTransformOrigin = styleOrigin;
-				this.obj.style.transformOrigin = styleOrigin;
+				this.element.style.WebkitTransformOrigin = styleOrigin;
+				this.element.style.transformOrigin = styleOrigin;
 				// implement the style
-				this.obj.style.WebkitTransform = styleTransform;
-				this.obj.style.transform = styleTransform;
+				this.element.style.WebkitTransform = styleTransform;
+				this.element.style.transform = styleTransform;
 			}
 			// repopulate the tiles after interaction stops
 			clearTimeout(this.timeout);
@@ -703,15 +707,16 @@
 		};
 		this.measure = function () {
 			// get the desired transformation
-			var transformation = this.parent.transformation;
+			var transformation = this.model.transformation,
+				area = this.model.area;
 			// report the transformation
 			console.log('transformation:', transformation);
 			// calculate the visible area
-			this.area.size = 1 / transformation.zoom;
-			this.area.left = Math.max(transformation.left - this.area.size / 2, 0);
-			this.area.top = Math.max(transformation.top - this.area.size / 2, 0);
-			this.area.right = Math.min(this.area.left + this.area.size, 1);
-			this.area.bottom = Math.min(this.area.top + this.area.size, 1);
+			area.size = 1 / transformation.zoom;
+			area.left = Math.max(transformation.left - area.size / 2, 0);
+			area.top = Math.max(transformation.top - area.size / 2, 0);
+			area.right = Math.min(area.left + area.size, 1);
+			area.bottom = Math.min(area.top + area.size, 1);
 		};
 		this.clean = function () {
 			// for all existing tiles
@@ -724,17 +729,17 @@
 		};
 		this.populate = function () {
 			// get the component's dimensions
-			var dimensions = this.parent.dimensions,
-				transformation = this.parent.transformation,
-				cfg = this.parent.cfg;
+			var dimensions = this.model.dimensions,
+				transformation = this.model.transformation,
+				area = this.model.area;
 			// calculate the grid size at this magnification
-			var cols = dimensions.width * transformation.zoom / cfg.tileSize,
-				rows = dimensions.height * transformation.zoom / cfg.tileSize,
+			var cols = dimensions.width * transformation.zoom / this.model.tileSize,
+				rows = dimensions.height * transformation.zoom / this.model.tileSize,
 				zoom = Math.ceil(transformation.zoom),
-				startCol = Math.max( Math.floor( this.area.left * cols ) - 1, 0 ),
-				endCol = Math.min( Math.ceil( this.area.right * cols ) + 1, cols ),
-				startRow = Math.max( Math.floor( this.area.top * rows ) - 1, 0 ),
-				endRow = Math.min( Math.ceil( this.area.bottom * rows ) + 1, rows ),
+				startCol = Math.max( Math.floor( area.left * cols ) - 1, 0 ),
+				endCol = Math.min( Math.ceil( area.right * cols ) + 1, cols ),
+				startRow = Math.max( Math.floor( area.top * rows ) - 1, 0 ),
+				endRow = Math.min( Math.ceil( area.bottom * rows ) + 1, rows ),
 				tileName;
 			// for every row of the grid
 			for (var row = startRow; row < endRow; row += 1) {
@@ -786,8 +791,9 @@
 		// PROPERTIES
 
 		this.parent = parent;
-		this.cfg = parent.cfg;
-		this.obj = null;
+		this.model = parent.model;
+
+		this.element = null;
 		this.name = properties.name;
 		this.index = properties.index;
 		this.zoom = properties.zoom;
@@ -799,10 +805,10 @@
 		// METHODS
 
 		this.redraw = function () {
-			var area = this.parent.area;
+			var area = this.model.area;
 			// if the index of the tile is too low
 			if (
-				this.index < this.parent.index - this.cfg.tileCache
+				this.index < this.parent.index - this.model.tileCache
 			) {
 				// remove the tile
 				this.remove();
@@ -833,40 +839,40 @@
 				this.bottom = 1;
 			}
 			// create an image of the specified dimensions
-			this.obj = document.createElement('div');
-			this.obj.id = this.name;
-			this.obj.style.position = 'absolute';
-			this.obj.style.left = (this.left * 100) + '%';
-			this.obj.style.top = (this.top * 100) + '%';
-			this.obj.style.right = (this.right * 100) + '%';
-			this.obj.style.bottom = (this.bottom * 100) + '%';
-			this.obj.style.backgroundSize = '100% 100%';
-			this.obj.style.zIndex = this.zoom;
+			this.element = document.createElement('div');
+			this.element.id = this.name;
+			this.element.style.position = 'absolute';
+			this.element.style.left = (this.left * 100) + '%';
+			this.element.style.top = (this.top * 100) + '%';
+			this.element.style.right = (this.right * 100) + '%';
+			this.element.style.bottom = (this.bottom * 100) + '%';
+			this.element.style.backgroundSize = '100% 100%';
+			this.element.style.zIndex = this.zoom;
 			// construct the url of the tile
-			this.obj.style.backgroundImage = 'url(' + this.cfg.tileSource
-				.replace('{src}', this.cfg.tileUrl)
+			this.element.style.backgroundImage = 'url(' + this.model.tileSource
+				.replace('{src}', this.model.tileUrl)
 				.replace('{left}', this.left)
 				.replace('{top}', this.top)
 				.replace('{right}', 1 - this.right)
 				.replace('{bottom}', 1 - this.bottom)
-				.replace('{width}', Math.round(this.cfg.tileSize * rightCor))
-				.replace('{height}', Math.round(this.cfg.tileSize * bottomCor)) + ')';
+				.replace('{width}', Math.round(this.model.tileSize * rightCor))
+				.replace('{height}', Math.round(this.model.tileSize * bottomCor)) + ')';
 			// add the tile to the layer
-			this.parent.obj.appendChild(this.obj);
+			this.parent.element.appendChild(this.element);
 		};
 		this.remove = function () {
 			// remove the tile
-			this.obj.parentNode.removeChild(this.obj);
+			this.element.parentNode.removeChild(this.element);
 			// remove  the reference
 			delete this.parent.tiles[this.name];
 		};
 		this.show = function () {
 			// show the tile
-			this.obj.style.display = 'block';
+			this.element.style.display = 'block';
 		};
 		this.hide = function () {
 			// hide the tile
-			this.obj.style.display = 'none';
+			this.element.style.display = 'none';
 		};
 
 		// STARTUP
@@ -889,26 +895,25 @@
 
 	"use strict";
 
-	useful.Zoom = function (obj, cfg) {
+	useful.Zoom = function (element, model) {
 
 		// PROPERTIES
 
-		this.obj = obj;
-		this.cfg = cfg;
-		// TODO: move these into the model (cfg) to pass on to sub-components
-		this.transformation = {
+		this.element = element;
+		this.model = model;
+
+		this.model.transformation = {
 			'left' : 0.5,
 			'top' : 0.5,
 			'zoom' : 1,
 			'rotate' : 0
 		};
-		this.dimensions = {
+		this.model.dimensions = {
 			'width' : null,
 			'height' : null,
 			'maxWidth' : null,
 			'maxHeight' : null
 		};
-		this.updated = 0;
 
 		// OBJECTS
 
@@ -951,24 +956,24 @@
 			var sheet = style.sheet || style.styleSheet;
 			// add the custom styles
 			if (sheet.insertRule) {
-				if (this.cfg.colorPassive) {
-					sheet.insertRule(".useful-zoom-controls button {background-color : " + this.cfg.colorPassive + " !important;}", 0);
+				if (this.model.colorPassive) {
+					sheet.insertRule(".useful-zoom-controls button {background-color : " + this.model.colorPassive + " !important;}", 0);
 				}
-				if (this.cfg.colorHover) {
-					sheet.insertRule(".useful-zoom-controls button:hover, .useful-zoom button:active {background-color : " + this.cfg.colorHover + " !important;}", 0);
+				if (this.model.colorHover) {
+					sheet.insertRule(".useful-zoom-controls button:hover, .useful-zoom button:active {background-color : " + this.model.colorHover + " !important;}", 0);
 				}
-				if (this.cfg.colorDisabled) {
-					sheet.insertRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover {background-color : " + this.cfg.colorDisabled + " !important;}", 0);
+				if (this.model.colorDisabled) {
+					sheet.insertRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover {background-color : " + this.model.colorDisabled + " !important;}", 0);
 				}
 			} else {
-				if (this.cfg.colorPassive) {
-					sheet.addRule(".useful-zoom-controls button", "background-color : " + this.cfg.colorPassive + " !important;", 0);
+				if (this.model.colorPassive) {
+					sheet.addRule(".useful-zoom-controls button", "background-color : " + this.model.colorPassive + " !important;", 0);
 				}
-				if (this.cfg.colorHover) {
-					sheet.addRule(".useful-zoom-controls button:hover, .useful-zoom button:active", "background-color : " + this.cfg.colorHover + " !important;", 0);
+				if (this.model.colorHover) {
+					sheet.addRule(".useful-zoom-controls button:hover, .useful-zoom button:active", "background-color : " + this.model.colorHover + " !important;", 0);
 				}
-				if (this.cfg.colorDisabled) {
-					sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.cfg.colorDisabled + " !important;", 0);
+				if (this.model.colorDisabled) {
+					sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.model.colorDisabled + " !important;", 0);
 				}
 			}
 		};
@@ -976,7 +981,7 @@
 			// make the dimensions update themselves upon resize
 			window.addEventListener('resize', this.onResize());
 			// add touch event handlers
-			this.gestures = new useful.Gestures(this.obj, {
+			this.gestures = new useful.Gestures(this.element, {
 				'threshold' : 50,
 				'increment' : 0.1,
 				'cancelTouch' : true,
@@ -987,25 +992,25 @@
 				'swipeDown' : function (coords) {},
 				'drag' : this.onDrag(),
 				'pinch' : this.onPinch(),
-				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {},
+				'twist' : (this.model.allowRotation) ? this.onTwist() : function () {},
 				'doubleTap' : this.onDoubleTap()
 			});
 			// cancel transitions afterwards
-			this.obj.addEventListener('transitionEnd', this.afterTransitions());
-			this.obj.addEventListener('webkitTransitionEnd', this.afterTransitions());
+			this.element.addEventListener('transitionEnd', this.afterTransitions());
+			this.element.addEventListener('webkitTransitionEnd', this.afterTransitions());
 		};
 		this.measureDimensions = function () {
 			// get the original link
-			var link = this.obj.getElementsByTagName('a')[0];
+			var link = this.element.getElementsByTagName('a')[0];
 			// store the image source
-			this.cfg.tileUrl = link.getAttribute('href');
+			this.model.tileUrl = link.getAttribute('href');
 			// store the starting dimensions
-			this.dimensions.width = this.obj.offsetWidth;
-			this.dimensions.height = this.obj.offsetHeight;
+			this.model.dimensions.width = this.element.offsetWidth;
+			this.model.dimensions.height = this.element.offsetHeight;
 			// store the maximum dimensions
-			this.dimensions.maxWidth = parseInt(link.getAttribute('data-width'));
-			this.dimensions.maxHeight = parseInt(link.getAttribute('data-height'));
-			this.dimensions.maxZoom = this.dimensions.maxWidth / this.dimensions.width;
+			this.model.dimensions.maxWidth = parseInt(link.getAttribute('data-width'));
+			this.model.dimensions.maxHeight = parseInt(link.getAttribute('data-height'));
+			this.model.dimensions.maxZoom = this.model.dimensions.maxWidth / this.model.dimensions.width;
 		};
 
 		// EVENTS
@@ -1022,8 +1027,8 @@
 			return function (coords) {
 				// calculate the translation
 				_this.moveBy(
-					coords.horizontal / _this.dimensions.width / _this.transformation.zoom,
-					coords.vertical / _this.dimensions.height / _this.transformation.zoom
+					coords.horizontal / _this.model.dimensions.width / _this.model.transformation.zoom,
+					coords.vertical / _this.model.dimensions.height / _this.model.transformation.zoom
 				);
 			};
 		};
@@ -1032,7 +1037,7 @@
 			return function (coords) {
 				// calculate the magnification
 				_this.zoomBy(
-					coords.scale * _this.transformation.zoom
+					coords.scale * _this.model.transformation.zoom
 				);
 			};
 		};
@@ -1051,16 +1056,16 @@
 				coords.event.preventDefault();
 				// calculate the zoom
 				_this.transform({
-					'left' : (coords.x / _this.dimensions.width - 0.5) / _this.transformation.zoom + _this.transformation.left,
-					'top' : (coords.y / _this.dimensions.height - 0.5) / _this.transformation.zoom + _this.transformation.top,
-					'zoom' : _this.transformation.zoom * 1.5
+					'left' : (coords.x / _this.model.dimensions.width - 0.5) / _this.model.transformation.zoom + _this.model.transformation.left,
+					'top' : (coords.y / _this.model.dimensions.height - 0.5) / _this.model.transformation.zoom + _this.model.transformation.top,
+					'zoom' : _this.model.transformation.zoom * 1.5
 				});
 			};
 		};
 		this.afterTransitions = function () {
 			var _this = this;
 			return function () {
-				_this.overlay.obj.className = _this.overlay.obj.className.replace(/useful-zoom-transition| useful-zoom-transition/g, '');
+				_this.overlay.element.className = _this.overlay.element.className.replace(/useful-zoom-transition| useful-zoom-transition/g, '');
 			};
 		};
 
@@ -1068,55 +1073,55 @@
 
 		this.transform = function (transformation) {
 			// apply the transformation
-			this.transformation.left = Math.max(Math.min(transformation.left, 1), 0) || this.transformation.left;
-			this.transformation.top = Math.max(Math.min(transformation.top, 1), 0) || this.transformation.top;
-			this.transformation.zoom = Math.max(Math.min(transformation.zoom, this.dimensions.maxZoom), 1) || this.transformation.zoom;
-			this.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0) || this.transformation.rotate;
+			this.model.transformation.left = Math.max(Math.min(transformation.left, 1), 0) || this.model.transformation.left;
+			this.model.transformation.top = Math.max(Math.min(transformation.top, 1), 0) || this.model.transformation.top;
+			this.model.transformation.zoom = Math.max(Math.min(transformation.zoom, this.model.dimensions.maxZoom), 1) || this.model.transformation.zoom;
+			this.model.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0) || this.model.transformation.rotate;
 			// activate the transition
-			this.overlay.obj.className += ' useful-zoom-transition';
+			this.overlay.element.className += ' useful-zoom-transition';
 			// trigger the transformation
 			var _this = this;
 			setTimeout(function () { _this.overlay.redraw(); }, 0);
 		};
 		this.moveBy = function (x,y) {
 			this.moveTo(
-				this.transformation.left - x,
-				this.transformation.top - y
+				this.model.transformation.left - x,
+				this.model.transformation.top - y
 			);
 		};
 		this.moveTo = function (x,y) {
 			// apply the translation
-			this.transformation.left = x;
-			this.transformation.top = y;
+			this.model.transformation.left = x;
+			this.model.transformation.top = y;
 			// apply the limits
-			this.transformation.left = Math.max(Math.min(this.transformation.left, 1), 0);
-			this.transformation.top = Math.max(Math.min(this.transformation.top, 1), 0);
+			this.model.transformation.left = Math.max(Math.min(this.model.transformation.left, 1), 0);
+			this.model.transformation.top = Math.max(Math.min(this.model.transformation.top, 1), 0);
 			// redraw the display
 			this.overlay.redraw();
 		};
 		this.zoomBy = function (z) {
 			this.zoomTo(
-				this.transformation.zoom + z
+				this.model.transformation.zoom + z
 			);
 		};
 		this.zoomTo = function (z) {
 			// apply the translation
-			this.transformation.zoom = z;
+			this.model.transformation.zoom = z;
 			// apply the limits
-			this.transformation.zoom = Math.max(Math.min(this.transformation.zoom, this.dimensions.maxZoom), 1);
+			this.model.transformation.zoom = Math.max(Math.min(this.model.transformation.zoom, this.model.dimensions.maxZoom), 1);
 			// redraw the display
 			this.overlay.redraw();
 		};
 		this.rotateBy = function (r) {
 			this.rotateTo(
-				this.transformation.rotate + r
+				this.model.transformation.rotate + r
 			);
 		};
 		this.rotateTo = function (r) {
 			// apply the translation
-			this.transformation.rotate += r;
+			this.model.transformation.rotate += r;
 			// apply the limits
-			this.transformation.rotate = Math.max(Math.min(this.transformation.rotate, 359), 0);
+			this.model.transformation.rotate = Math.max(Math.min(this.model.transformation.rotate, 359), 0);
 			// redraw the display
 			this.overlay.redraw();
 		};

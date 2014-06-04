@@ -15,8 +15,9 @@
 		// PROPERTIES
 
 		this.parent = parent;
-		this.cfg = parent.cfg;
-		this.obj = null;
+		this.model = parent.model;
+
+		this.element = null;
 		this.name = properties.name;
 		this.index = properties.index;
 		this.zoom = properties.zoom;
@@ -28,10 +29,10 @@
 		// METHODS
 
 		this.redraw = function () {
-			var area = this.parent.area;
+			var area = this.model.area;
 			// if the index of the tile is too low
 			if (
-				this.index < this.parent.index - this.cfg.tileCache
+				this.index < this.parent.index - this.model.tileCache
 			) {
 				// remove the tile
 				this.remove();
@@ -62,40 +63,40 @@
 				this.bottom = 1;
 			}
 			// create an image of the specified dimensions
-			this.obj = document.createElement('div');
-			this.obj.id = this.name;
-			this.obj.style.position = 'absolute';
-			this.obj.style.left = (this.left * 100) + '%';
-			this.obj.style.top = (this.top * 100) + '%';
-			this.obj.style.right = (this.right * 100) + '%';
-			this.obj.style.bottom = (this.bottom * 100) + '%';
-			this.obj.style.backgroundSize = '100% 100%';
-			this.obj.style.zIndex = this.zoom;
+			this.element = document.createElement('div');
+			this.element.id = this.name;
+			this.element.style.position = 'absolute';
+			this.element.style.left = (this.left * 100) + '%';
+			this.element.style.top = (this.top * 100) + '%';
+			this.element.style.right = (this.right * 100) + '%';
+			this.element.style.bottom = (this.bottom * 100) + '%';
+			this.element.style.backgroundSize = '100% 100%';
+			this.element.style.zIndex = this.zoom;
 			// construct the url of the tile
-			this.obj.style.backgroundImage = 'url(' + this.cfg.tileSource
-				.replace('{src}', this.cfg.tileUrl)
+			this.element.style.backgroundImage = 'url(' + this.model.tileSource
+				.replace('{src}', this.model.tileUrl)
 				.replace('{left}', this.left)
 				.replace('{top}', this.top)
 				.replace('{right}', 1 - this.right)
 				.replace('{bottom}', 1 - this.bottom)
-				.replace('{width}', Math.round(this.cfg.tileSize * rightCor))
-				.replace('{height}', Math.round(this.cfg.tileSize * bottomCor)) + ')';
+				.replace('{width}', Math.round(this.model.tileSize * rightCor))
+				.replace('{height}', Math.round(this.model.tileSize * bottomCor)) + ')';
 			// add the tile to the layer
-			this.parent.obj.appendChild(this.obj);
+			this.parent.element.appendChild(this.element);
 		};
 		this.remove = function () {
 			// remove the tile
-			this.obj.parentNode.removeChild(this.obj);
+			this.element.parentNode.removeChild(this.element);
 			// remove  the reference
 			delete this.parent.tiles[this.name];
 		};
 		this.show = function () {
 			// show the tile
-			this.obj.style.display = 'block';
+			this.element.style.display = 'block';
 		};
 		this.hide = function () {
 			// hide the tile
-			this.obj.style.display = 'none';
+			this.element.style.display = 'none';
 		};
 
 		// STARTUP

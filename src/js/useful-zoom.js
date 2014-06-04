@@ -10,26 +10,25 @@
 
 	"use strict";
 
-	useful.Zoom = function (obj, cfg) {
+	useful.Zoom = function (element, model) {
 
 		// PROPERTIES
 
-		this.obj = obj;
-		this.cfg = cfg;
-		// TODO: move these into the model (cfg) to pass on to sub-components
-		this.transformation = {
+		this.element = element;
+		this.model = model;
+
+		this.model.transformation = {
 			'left' : 0.5,
 			'top' : 0.5,
 			'zoom' : 1,
 			'rotate' : 0
 		};
-		this.dimensions = {
+		this.model.dimensions = {
 			'width' : null,
 			'height' : null,
 			'maxWidth' : null,
 			'maxHeight' : null
 		};
-		this.updated = 0;
 
 		// OBJECTS
 
@@ -72,24 +71,24 @@
 			var sheet = style.sheet || style.styleSheet;
 			// add the custom styles
 			if (sheet.insertRule) {
-				if (this.cfg.colorPassive) {
-					sheet.insertRule(".useful-zoom-controls button {background-color : " + this.cfg.colorPassive + " !important;}", 0);
+				if (this.model.colorPassive) {
+					sheet.insertRule(".useful-zoom-controls button {background-color : " + this.model.colorPassive + " !important;}", 0);
 				}
-				if (this.cfg.colorHover) {
-					sheet.insertRule(".useful-zoom-controls button:hover, .useful-zoom button:active {background-color : " + this.cfg.colorHover + " !important;}", 0);
+				if (this.model.colorHover) {
+					sheet.insertRule(".useful-zoom-controls button:hover, .useful-zoom button:active {background-color : " + this.model.colorHover + " !important;}", 0);
 				}
-				if (this.cfg.colorDisabled) {
-					sheet.insertRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover {background-color : " + this.cfg.colorDisabled + " !important;}", 0);
+				if (this.model.colorDisabled) {
+					sheet.insertRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover {background-color : " + this.model.colorDisabled + " !important;}", 0);
 				}
 			} else {
-				if (this.cfg.colorPassive) {
-					sheet.addRule(".useful-zoom-controls button", "background-color : " + this.cfg.colorPassive + " !important;", 0);
+				if (this.model.colorPassive) {
+					sheet.addRule(".useful-zoom-controls button", "background-color : " + this.model.colorPassive + " !important;", 0);
 				}
-				if (this.cfg.colorHover) {
-					sheet.addRule(".useful-zoom-controls button:hover, .useful-zoom button:active", "background-color : " + this.cfg.colorHover + " !important;", 0);
+				if (this.model.colorHover) {
+					sheet.addRule(".useful-zoom-controls button:hover, .useful-zoom button:active", "background-color : " + this.model.colorHover + " !important;", 0);
 				}
-				if (this.cfg.colorDisabled) {
-					sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.cfg.colorDisabled + " !important;", 0);
+				if (this.model.colorDisabled) {
+					sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.model.colorDisabled + " !important;", 0);
 				}
 			}
 		};
@@ -97,7 +96,7 @@
 			// make the dimensions update themselves upon resize
 			window.addEventListener('resize', this.onResize());
 			// add touch event handlers
-			this.gestures = new useful.Gestures(this.obj, {
+			this.gestures = new useful.Gestures(this.element, {
 				'threshold' : 50,
 				'increment' : 0.1,
 				'cancelTouch' : true,
@@ -108,25 +107,25 @@
 				'swipeDown' : function (coords) {},
 				'drag' : this.onDrag(),
 				'pinch' : this.onPinch(),
-				'twist' : (this.cfg.allowRotation) ? this.onTwist() : function () {},
+				'twist' : (this.model.allowRotation) ? this.onTwist() : function () {},
 				'doubleTap' : this.onDoubleTap()
 			});
 			// cancel transitions afterwards
-			this.obj.addEventListener('transitionEnd', this.afterTransitions());
-			this.obj.addEventListener('webkitTransitionEnd', this.afterTransitions());
+			this.element.addEventListener('transitionEnd', this.afterTransitions());
+			this.element.addEventListener('webkitTransitionEnd', this.afterTransitions());
 		};
 		this.measureDimensions = function () {
 			// get the original link
-			var link = this.obj.getElementsByTagName('a')[0];
+			var link = this.element.getElementsByTagName('a')[0];
 			// store the image source
-			this.cfg.tileUrl = link.getAttribute('href');
+			this.model.tileUrl = link.getAttribute('href');
 			// store the starting dimensions
-			this.dimensions.width = this.obj.offsetWidth;
-			this.dimensions.height = this.obj.offsetHeight;
+			this.model.dimensions.width = this.element.offsetWidth;
+			this.model.dimensions.height = this.element.offsetHeight;
 			// store the maximum dimensions
-			this.dimensions.maxWidth = parseInt(link.getAttribute('data-width'));
-			this.dimensions.maxHeight = parseInt(link.getAttribute('data-height'));
-			this.dimensions.maxZoom = this.dimensions.maxWidth / this.dimensions.width;
+			this.model.dimensions.maxWidth = parseInt(link.getAttribute('data-width'));
+			this.model.dimensions.maxHeight = parseInt(link.getAttribute('data-height'));
+			this.model.dimensions.maxZoom = this.model.dimensions.maxWidth / this.model.dimensions.width;
 		};
 
 		// EVENTS
@@ -143,8 +142,8 @@
 			return function (coords) {
 				// calculate the translation
 				_this.moveBy(
-					coords.horizontal / _this.dimensions.width / _this.transformation.zoom,
-					coords.vertical / _this.dimensions.height / _this.transformation.zoom
+					coords.horizontal / _this.model.dimensions.width / _this.model.transformation.zoom,
+					coords.vertical / _this.model.dimensions.height / _this.model.transformation.zoom
 				);
 			};
 		};
@@ -153,7 +152,7 @@
 			return function (coords) {
 				// calculate the magnification
 				_this.zoomBy(
-					coords.scale * _this.transformation.zoom
+					coords.scale * _this.model.transformation.zoom
 				);
 			};
 		};
@@ -172,16 +171,16 @@
 				coords.event.preventDefault();
 				// calculate the zoom
 				_this.transform({
-					'left' : (coords.x / _this.dimensions.width - 0.5) / _this.transformation.zoom + _this.transformation.left,
-					'top' : (coords.y / _this.dimensions.height - 0.5) / _this.transformation.zoom + _this.transformation.top,
-					'zoom' : _this.transformation.zoom * 1.5
+					'left' : (coords.x / _this.model.dimensions.width - 0.5) / _this.model.transformation.zoom + _this.model.transformation.left,
+					'top' : (coords.y / _this.model.dimensions.height - 0.5) / _this.model.transformation.zoom + _this.model.transformation.top,
+					'zoom' : _this.model.transformation.zoom * 1.5
 				});
 			};
 		};
 		this.afterTransitions = function () {
 			var _this = this;
 			return function () {
-				_this.overlay.obj.className = _this.overlay.obj.className.replace(/useful-zoom-transition| useful-zoom-transition/g, '');
+				_this.overlay.element.className = _this.overlay.element.className.replace(/useful-zoom-transition| useful-zoom-transition/g, '');
 			};
 		};
 
@@ -189,55 +188,55 @@
 
 		this.transform = function (transformation) {
 			// apply the transformation
-			this.transformation.left = Math.max(Math.min(transformation.left, 1), 0) || this.transformation.left;
-			this.transformation.top = Math.max(Math.min(transformation.top, 1), 0) || this.transformation.top;
-			this.transformation.zoom = Math.max(Math.min(transformation.zoom, this.dimensions.maxZoom), 1) || this.transformation.zoom;
-			this.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0) || this.transformation.rotate;
+			this.model.transformation.left = Math.max(Math.min(transformation.left, 1), 0) || this.model.transformation.left;
+			this.model.transformation.top = Math.max(Math.min(transformation.top, 1), 0) || this.model.transformation.top;
+			this.model.transformation.zoom = Math.max(Math.min(transformation.zoom, this.model.dimensions.maxZoom), 1) || this.model.transformation.zoom;
+			this.model.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0) || this.model.transformation.rotate;
 			// activate the transition
-			this.overlay.obj.className += ' useful-zoom-transition';
+			this.overlay.element.className += ' useful-zoom-transition';
 			// trigger the transformation
 			var _this = this;
 			setTimeout(function () { _this.overlay.redraw(); }, 0);
 		};
 		this.moveBy = function (x,y) {
 			this.moveTo(
-				this.transformation.left - x,
-				this.transformation.top - y
+				this.model.transformation.left - x,
+				this.model.transformation.top - y
 			);
 		};
 		this.moveTo = function (x,y) {
 			// apply the translation
-			this.transformation.left = x;
-			this.transformation.top = y;
+			this.model.transformation.left = x;
+			this.model.transformation.top = y;
 			// apply the limits
-			this.transformation.left = Math.max(Math.min(this.transformation.left, 1), 0);
-			this.transformation.top = Math.max(Math.min(this.transformation.top, 1), 0);
+			this.model.transformation.left = Math.max(Math.min(this.model.transformation.left, 1), 0);
+			this.model.transformation.top = Math.max(Math.min(this.model.transformation.top, 1), 0);
 			// redraw the display
 			this.overlay.redraw();
 		};
 		this.zoomBy = function (z) {
 			this.zoomTo(
-				this.transformation.zoom + z
+				this.model.transformation.zoom + z
 			);
 		};
 		this.zoomTo = function (z) {
 			// apply the translation
-			this.transformation.zoom = z;
+			this.model.transformation.zoom = z;
 			// apply the limits
-			this.transformation.zoom = Math.max(Math.min(this.transformation.zoom, this.dimensions.maxZoom), 1);
+			this.model.transformation.zoom = Math.max(Math.min(this.model.transformation.zoom, this.model.dimensions.maxZoom), 1);
 			// redraw the display
 			this.overlay.redraw();
 		};
 		this.rotateBy = function (r) {
 			this.rotateTo(
-				this.transformation.rotate + r
+				this.model.transformation.rotate + r
 			);
 		};
 		this.rotateTo = function (r) {
 			// apply the translation
-			this.transformation.rotate += r;
+			this.model.transformation.rotate += r;
 			// apply the limits
-			this.transformation.rotate = Math.max(Math.min(this.transformation.rotate, 359), 0);
+			this.model.transformation.rotate = Math.max(Math.min(this.model.transformation.rotate, 359), 0);
 			// redraw the display
 			this.overlay.redraw();
 		};
