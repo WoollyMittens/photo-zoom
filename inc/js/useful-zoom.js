@@ -731,10 +731,10 @@
 			var cols = dimensions.width * transformation.zoom / cfg.tileSize,
 				rows = dimensions.height * transformation.zoom / cfg.tileSize,
 				zoom = Math.ceil(transformation.zoom),
-				startCol = Math.floor(this.area.left * cols),
-				endCol = Math.ceil(this.area.right * cols),
-				startRow = Math.floor(this.area.top * rows),
-				endRow = Math.ceil(this.area.bottom * rows),
+				startCol = Math.max( Math.floor( this.area.left * cols ) - 1, 0 ),
+				endCol = Math.min( Math.ceil( this.area.right * cols ) + 1, cols ),
+				startRow = Math.max( Math.floor( this.area.top * rows ) - 1, 0 ),
+				endRow = Math.min( Math.ceil( this.area.bottom * rows ) + 1, rows ),
 				tileName;
 			// for every row of the grid
 			for (var row = startRow; row < endRow; row += 1) {
@@ -1055,7 +1055,6 @@
 					'top' : (coords.y / _this.dimensions.height - 0.5) / _this.transformation.zoom + _this.transformation.top,
 					'zoom' : _this.transformation.zoom * 1.5
 				});
-				console.log('double tap:', coords, _this.dimensions);
 			};
 		};
 		this.afterTransitions = function () {
