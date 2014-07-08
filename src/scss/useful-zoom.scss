@@ -1,102 +1,85 @@
+@import "compass/css3";
+@import "compass/utilities";
+@import "mixins";
 /*
 	Reference Styling for An Interactive Row of Thumbnails
 */
-
-@import "compass/css3";
-@import "compass/utilities";
-@import "definitions";
-@import "typography";
-
-@media all {
-
-	.useful-zoom {
+.useful-zoom {
+	display : block;
+	margin : 0;
+	max-width : 480px;
+	min-width : 240px;
+	overflow : hidden;
+	padding : 0;
+	position : relative;
+	* {
+		@include box-sizing(border-box);
+	}
+	a img {
 		display : block;
-		margin : 0;
-		max-width : 480px;
-		min-width : 240px;
-		overflow : hidden;
-		padding : 0;
-		position : relative;
-		* {
-			@include box-sizing(border-box);
-		}
-		a img {
-			display : block;
-			height : auto;
-			width : 100%;
-		}
-		menu {
-			@include transition-property(opacity);
-			@include transition-duration(0.3s);
-			@include transition-timing-function(ease);
-			opacity : 0.5;
-		}
-		&:hover menu {
-			opacity : 1;
-		}
+		height : auto;
+		width : 100%;
 	}
-
-	.useful-zoom-overlay {
-		background-size : 100% auto;
-		left : 0;
-		top : 0;
-		right : 0;
-		bottom : 0;
-		position : absolute;
-		z-index : 10;
-	}
-
-	.useful-zoom-transition {
-		@include transition-property(transform, transform-origin);
-		@include transition-duration(1s);
+	menu {
+		@include transition-property(opacity);
+		@include transition-duration(0.3s);
 		@include transition-timing-function(ease);
+		opacity : 0.5;
 	}
-
-	.useful-zoom-controls {
-		position : absolute;
-		right : 10px;
-		top : 10px;
-		z-index : 20;
-		button {
-			@include iconParent(48);
-			background-color : $color-passive;
-			border : none;
-			cursor : pointer;
-			display : block;
-			height : 32px;
-			margin : 0;
-			margin-bottom : 5px;
-			padding : 0;
-			width : 32px;
-			z-index : 10;
-			&:before {
-				background : Transparent url(../img/zoom.png) no-repeat 0 0;
-				@include iconCenter(32);
-			}
-		}
-		button:hover {
-			background-color : $color-hover;
-		}
-		.disabled, .disabled:hover {
-			background-color : $color-disabled;
-		}
-		.useful-zoom-in {
-			&:before {
-				background-position : 0% -32px;
-			}
-		}
-		.useful-zoom-out {
-			&:before {
-				background-position : 100% -32px;
-			}
-		}
+	&:hover menu {
+		opacity : 1;
 	}
-
 }
-
-@media (min-width: 1200px) {}
-@media (min-width: 980px) and (max-width: 1199px) {}
-@media (min-width: 768px) and (max-width: 979px) {}
-@media (max-width: 767px) {}
-@media (max-width: 480px) {}
-@media print {}
+.useful-zoom-overlay {
+	background-size : 100% auto;
+	left : 0;
+	top : 0;
+	right : 0;
+	bottom : 0;
+	position : absolute;
+	z-index : 10;
+}
+.useful-zoom-transition {
+	@include transition-property(transform, transform-origin);
+	@include transition-duration(1s);
+	@include transition-timing-function(ease);
+}
+.useful-zoom-controls {
+	position : absolute;
+	right : 10px;
+	top : 10px;
+	z-index : 20;
+	button {
+		@include iconParent(48);
+		background-color : $color-passive;
+		border : none;
+		cursor : pointer;
+		display : block;
+		height : 32px;
+		margin : 0;
+		margin-bottom : 5px;
+		padding : 0;
+		width : 32px;
+		z-index : 10;
+		&:before {
+			background : Transparent url(../img/zoom.png) no-repeat 0 0;
+			@include iconCenter(32);
+		}
+	}
+	button:hover {
+		background-color : $color-hover;
+	}
+	.disabled, .disabled:hover {
+		background-color : $color-disabled;
+	}
+	.useful-zoom-in {
+		&:before {
+			background-position : 0% -32px;
+		}
+	}
+	.useful-zoom-out {
+		&:before {
+			background-position : 100% -32px;
+		}
+	}
+}
