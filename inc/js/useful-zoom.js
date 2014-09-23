@@ -6,7 +6,10 @@
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 */
 
-(function (useful) {
+// public object
+var useful = useful || {};
+
+(function(){
 
 	// invoke strict mode
 	"use strict";
@@ -163,7 +166,8 @@
 					this.lastTouch &&
 					Math.abs(this.touchOrigin.x - this.lastTouch.x) < 10 &&
 					Math.abs(this.touchOrigin.y - this.lastTouch.y) < 10 &&
-					new Date().getTime() - this.lastTouch.time < 300
+					new Date().getTime() - this.lastTouch.time < 500 &&
+					new Date().getTime() - this.lastTouch.time > 100
 				) {
 					// treat this as a double tap
 					this.cfg.doubleTap({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'event' : event, 'source' : this.touchOrigin.target});
@@ -454,7 +458,12 @@
 		this.start();
 	};
 
-}(window.useful = window.useful || {}));
+	// return as a require.js module
+	if (typeof module !== 'undefined') {
+		exports = module.exports = useful.Gestures;
+	}
+
+})();
 
 /*
 	Source:
@@ -744,7 +753,10 @@ var useful = useful || {};
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 */
 
-(function (useful) {
+// public object
+var useful = useful || {};
+
+(function(){
 
 	"use strict";
 
@@ -837,7 +849,12 @@ var useful = useful || {};
 
 	};
 
-}(window.useful = window.useful || {}));
+	// return as a require.js module
+	if (typeof module !== 'undefined') {
+		exports = module.exports = useful.Zoom_Controls;
+	}
+
+})();
 
 /*
 	Source:
@@ -847,7 +864,10 @@ var useful = useful || {};
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 */
 
-(function (useful) {
+// public object
+var useful = useful || {};
+
+(function(){
 
 	"use strict";
 
@@ -978,7 +998,12 @@ var useful = useful || {};
 
 	};
 
-}(window.useful = window.useful || {}));
+	// return as a require.js module
+	if (typeof module !== 'undefined') {
+		exports = module.exports = useful.Zoom_Overlay;
+	}
+
+})();
 
 /*
 	Source:
@@ -988,7 +1013,10 @@ var useful = useful || {};
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 */
 
-(function (useful) {
+// public object
+var useful = useful || {};
+
+(function(){
 
 	"use strict";
 
@@ -1087,7 +1115,12 @@ var useful = useful || {};
 
 	};
 
-}(window.useful = window.useful || {}));
+	// return as a require.js module
+	if (typeof module !== 'undefined') {
+		exports = module.exports = useful.Zoom_Tile;
+	}
+
+})();
 
 /*
 	Source:
@@ -1097,7 +1130,10 @@ var useful = useful || {};
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 */
 
-(function (useful) {
+// public object
+var useful = useful || {};
+
+(function(){
 
 	"use strict";
 
@@ -1338,4 +1374,9 @@ var useful = useful || {};
 
 	};
 
-}(window.useful = window.useful || {}));
+	// return as a require.js module
+	if (typeof module !== 'undefined') {
+		exports = module.exports = useful.Zoom;
+	}
+
+})();
