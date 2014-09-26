@@ -79,19 +79,15 @@ var useful = useful || {};
 		this.readEvent = function (event) {
 			var coords = {}, offsets;
 			// try all likely methods of storing coordinates in an event
-			if (event.x !== undefined) {
-				coords.x = event.x;
-				coords.y = event.y;
+			if (event.pageX !== undefined) {
+				coords.x = event.pageX;
+				coords.y = event.pageY;
 			} else if (event.touches && event.touches[0]) {
 				coords.x = event.touches[0].pageX;
 				coords.y = event.touches[0].pageY;
-			} else if (event.pageX !== undefined) {
-				coords.x = event.pageX;
-				coords.y = event.pageY;
 			} else {
-				offsets = this.correctOffset(event.target || event.srcElement);
-				coords.x = event.layerX + offsets.x;
-				coords.y = event.layerY + offsets.y;
+				coords.x = event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft);
+				coords.y = event.clientY + (document.documentElement.scrollTop || document.body.scrollTop);
 			}
 			return coords;
 		};
@@ -909,12 +905,14 @@ var useful = useful || {};
 				// store the time of this redraw
 				this.updated = updated;
 				// formulate a css transformation
-				var styleTransform = 'scaleX(' + transformation.zoom +') scaleY(' + transformation.zoom +') rotateZ(' + transformation.rotate + 'deg)';
+				var styleTransform = 'scale(' + transformation.zoom + ', ' + transformation.zoom +') rotate(' + transformation.rotate + 'deg)';
 				var styleOrigin = (transformation.left * 100) + '% ' + (transformation.top * 100) + '%';
 				// re-centre the origin
+				this.element.style.msTransformOrigin = styleOrigin;
 				this.element.style.WebkitTransformOrigin = styleOrigin;
 				this.element.style.transformOrigin = styleOrigin;
 				// implement the style
+				this.element.style.msTransform = styleTransform;
 				this.element.style.WebkitTransform = styleTransform;
 				this.element.style.transform = styleTransform;
 			}

@@ -51,12 +51,14 @@ var useful = useful || {};
 				// store the time of this redraw
 				this.updated = updated;
 				// formulate a css transformation
-				var styleTransform = 'scaleX(' + transformation.zoom +') scaleY(' + transformation.zoom +') rotateZ(' + transformation.rotate + 'deg)';
+				var styleTransform = 'scale(' + transformation.zoom + ', ' + transformation.zoom +') rotate(' + transformation.rotate + 'deg)';
 				var styleOrigin = (transformation.left * 100) + '% ' + (transformation.top * 100) + '%';
 				// re-centre the origin
+				this.element.style.msTransformOrigin = styleOrigin;
 				this.element.style.WebkitTransformOrigin = styleOrigin;
 				this.element.style.transformOrigin = styleOrigin;
 				// implement the style
+				this.element.style.msTransform = styleTransform;
 				this.element.style.WebkitTransform = styleTransform;
 				this.element.style.transform = styleTransform;
 			}
