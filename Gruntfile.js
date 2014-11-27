@@ -4,6 +4,8 @@ module.exports = function(grunt) {
 	var name = 'zoom';
 	var libs = [
 		'../useful-gestures/src/js/useful-gestures.js',
+		'../useful-gestures/src/js/useful-gestures-multi.js',
+		'../useful-gestures/src/js/useful-gestures-single.js',
 		'../useful-polyfills/src/js/useful-polyfills.js'
 	];
 	var mixins = [

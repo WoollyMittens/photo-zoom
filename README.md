@@ -21,7 +21,8 @@ This include can be added to the header or placed inline before the script is in
 ## How to start the script
 
 ```javascript
-var zoom = new useful.Zoom( document.getElementById('zoom'), {
+var zoom = new useful.Zoom().init({
+	'element' : document.getElementById('zoom'),
 	'tileSource' : 'inc/php/imageslice.php?src=../../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
 	'tileCache' : 128,
 	'tileSize' : 128,

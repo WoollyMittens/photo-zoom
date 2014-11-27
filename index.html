@@ -29,14 +29,15 @@
 
 				<!-- Cut below this -->
 				<style>@import url("./inc/css/useful-zoom.css");</style>
-				<figure id="zooma" class="useful-zoom">
+				<figure id="zoomExample" class="useful-zoom">
 					<a href="./inc/large/photo_0.jpg" data-width="4608" data-height="3456" data-left="0" data-top="0" data-right="1" data-bottom="1"><img title="Lorem Ipsum" alt="Lorem ipsum dolor sit amet" src="./inc/small/photo_0.jpg"/></a>
 				</figure>
 				<script src="./inc/js/useful-zoom.js"></script>
 				<script>
 				//<!--
 					// create a new instance of the script
-					var zooma = new useful.Zoom( document.getElementById('zooma'), {
+					var zoom = new useful.Zoom().init({
+						'element' : document.getElementById('zoomExample'),
 						'tileSource' : 'inc/php/imageslice.php?src=../../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
 						'tileCache' : 128,
 						'tileSize' : 128,
@@ -47,14 +48,14 @@
 				<!-- Cut above this -->
 
 				<p>
-					<a href="#" onclick="zooma.transform({left: 0.5405797101449278, top: 0.4434810533076427, zoom: 3.375, rotate: 0});">
-						<img alt="Transformation 1" src="./inc/img/transformation_1.png" style="width:32%;height:aut0;"/>
+					<a href="#" onclick="zoom.transform({left: 0.5405797101449278, top: 0.4434810533076427, zoom: 3.375, rotate: 0});">
+						<img alt="Transformation 1" src="./inc/img/transformation_1.png" style="width:32%;height:auto;"/>
 					</a>
-					<a href="#" onclick="zooma.transform({left: 0.75, top: 0.75, zoom: 7, rotate: 0});">
-						<img alt="Transformation 1" src="./inc/img/transformation_2.png" style="width:32%;height:aut0;"/>
+					<a href="#" onclick="zoom.transform({left: 0.75, top: 0.75, zoom: 7, rotate: 0});">
+						<img alt="Transformation 1" src="./inc/img/transformation_2.png" style="width:32%;height:auto;"/>
 					</a>
-					<a href="#" onclick="zooma.transform({left: 0.06400966183574874, top: 0.5333440376792978, zoom: 3.375, rotate: 0});">
-						<img alt="Transformation 1" src="./inc/img/transformation_3.png" style="width:32%;height:aut0;"/>
+					<a href="#" onclick="zoom.transform({left: 0.06400966183574874, top: 0.5333440376792978, zoom: 3.375, rotate: 0});">
+						<img alt="Transformation 1" src="./inc/img/transformation_3.png" style="width:32%;height:auto;"/>
 					</a>
 				</p>
 
