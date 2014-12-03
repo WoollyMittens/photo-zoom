@@ -17,14 +17,15 @@ useful.Zoom.prototype.Overlay = function (parent) {
 
 	"use strict";
 	this.parent = parent;
-	this.model = parent.model;
+	this.config = parent.config;
+	this.context = parent.context;
 
 	this.element = null;
 	this.timeout = null;
 	this.tiles = {};
 	this.index = 0;
 	this.updated = 0;
-	this.model.area = {};
+	this.config.area = {};
 
 	// METHODS
 
@@ -43,7 +44,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 	};
 	this.redraw = function () {
 		// get the transformation settings from the parent object
-		var _this = this, transformation = this.model.transformation;
+		var _this = this, transformation = this.config.transformation;
 		// if the last redraw occurred sufficiently long ago
 		var updated = new Date().getTime();
 		if (updated - this.updated > 20) {
@@ -76,8 +77,8 @@ useful.Zoom.prototype.Overlay = function (parent) {
 	};
 	this.measure = function () {
 		// get the desired transformation
-		var transformation = this.model.transformation,
-			area = this.model.area;
+		var transformation = this.config.transformation,
+			area = this.config.area;
 		// report the transformation
 		console.log('transformation:', transformation);
 		// calculate the visible area
@@ -98,12 +99,12 @@ useful.Zoom.prototype.Overlay = function (parent) {
 	};
 	this.populate = function () {
 		// get the component's dimensions
-		var dimensions = this.model.dimensions,
-			transformation = this.model.transformation,
-			area = this.model.area;
+		var dimensions = this.config.dimensions,
+			transformation = this.config.transformation,
+			area = this.config.area;
 		// calculate the grid size at this magnification
-		var cols = dimensions.width * transformation.zoom / this.model.tileSize,
-			rows = dimensions.height * transformation.zoom / this.model.tileSize,
+		var cols = dimensions.width * transformation.zoom / this.config.tileSize,
+			rows = dimensions.height * transformation.zoom / this.config.tileSize,
 			zoom = Math.ceil(transformation.zoom),
 			startCol = Math.max( Math.floor( area.left * cols ) - 1, 0 ),
 			endCol = Math.min( Math.ceil( area.right * cols ) + 1, cols ),
@@ -119,7 +120,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 				// if this is a new tile
 				if (this.tiles[tileName] === undefined) {
 					// create a new tile with the name and dimensions (name,index,zoom,left,top,right,bottom)
-					this.tiles[tileName] = new this.parent.Tile(this, {
+					this.tiles[tileName] = new this.context.Tile(this, {
 						'name' : tileName,
 						'index' : this.index,
 						'zoom' : zoom,

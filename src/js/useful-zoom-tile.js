@@ -18,7 +18,7 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 
 	"use strict";
 	this.parent = parent;
-	this.model = parent.model;
+	this.config = parent.config;
 
 	this.element = null;
 	this.name = properties.name;
@@ -32,10 +32,10 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 	// METHODS
 
 	this.redraw = function () {
-		var area = this.model.area;
+		var area = this.config.area;
 		// if the index of the tile is too low
 		if (
-			this.index < this.parent.index - this.model.tileCache
+			this.index < this.parent.index - this.config.tileCache
 		) {
 			// remove the tile
 			this.remove();
@@ -76,14 +76,14 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 		this.element.style.backgroundSize = '100% 100%';
 		this.element.style.zIndex = this.zoom;
 		// construct the url of the tile
-		this.element.style.backgroundImage = 'url(' + this.model.tileSource
-			.replace('{src}', this.model.tileUrl)
+		this.element.style.backgroundImage = 'url(' + this.config.tileSource
+			.replace('{src}', this.config.tileUrl)
 			.replace('{left}', this.left)
 			.replace('{top}', this.top)
 			.replace('{right}', 1 - this.right)
 			.replace('{bottom}', 1 - this.bottom)
-			.replace('{width}', Math.round(this.model.tileSize * rightCor))
-			.replace('{height}', Math.round(this.model.tileSize * bottomCor)) + ')';
+			.replace('{width}', Math.round(this.config.tileSize * rightCor))
+			.replace('{height}', Math.round(this.config.tileSize * bottomCor)) + ')';
 		// add the tile to the layer
 		this.parent.element.appendChild(this.element);
 	};

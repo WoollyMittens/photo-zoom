@@ -17,7 +17,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 
 	"use strict";
 	this.parent = parent;
-	this.model = parent.model;
+	this.config = parent.config;
 	this.element = parent.element;
 
 	// METHODS
@@ -38,7 +38,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			'swipeDown' : function (coords) {},
 			'drag' : this.onDrag(),
 			'pinch' : this.onPinch(),
-			'twist' : (this.model.allowRotation) ? this.onTwist() : function () {},
+			'twist' : (this.config.allowRotation) ? this.onTwist() : function () {},
 			'doubleTap' : this.onDoubleTap()
 		});
 		// cancel transitions afterwards
@@ -64,8 +64,8 @@ useful.Zoom.prototype.Touch = function (parent) {
 		return function (coords) {
 			// calculate the translation
 			_this.parent.moveBy(
-				coords.horizontal / _this.model.dimensions.width / _this.model.transformation.zoom,
-				coords.vertical / _this.model.dimensions.height / _this.model.transformation.zoom
+				coords.horizontal / _this.config.dimensions.width / _this.config.transformation.zoom,
+				coords.vertical / _this.config.dimensions.height / _this.config.transformation.zoom
 			);
 		};
 	};
@@ -74,7 +74,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 		return function (coords) {
 			// calculate the magnification
 			_this.parent.zoomBy(
-				coords.scale * _this.model.transformation.zoom
+				coords.scale * _this.config.transformation.zoom
 			);
 		};
 	};
@@ -93,9 +93,9 @@ useful.Zoom.prototype.Touch = function (parent) {
 			coords.event.preventDefault();
 			// calculate the zoom
 			_this.parent.transform({
-				'left' : (coords.x / _this.model.dimensions.width - 0.5) / _this.model.transformation.zoom + _this.model.transformation.left,
-				'top' : (coords.y / _this.model.dimensions.height - 0.5) / _this.model.transformation.zoom + _this.model.transformation.top,
-				'zoom' : _this.model.transformation.zoom * 1.5
+				'left' : (coords.x / _this.config.dimensions.width - 0.5) / _this.config.transformation.zoom + _this.config.transformation.left,
+				'top' : (coords.y / _this.config.dimensions.height - 0.5) / _this.config.transformation.zoom + _this.config.transformation.top,
+				'zoom' : _this.config.transformation.zoom * 1.5
 			});
 		};
 	};

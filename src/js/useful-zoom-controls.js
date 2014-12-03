@@ -17,7 +17,7 @@ useful.Zoom.prototype.Controls = function (parent) {
 
 	"use strict";
 	this.parent = parent;
-	this.model = parent.model;
+	this.config = parent.config;
 
 	this.element = null;
 	this.zoomIn = null;
@@ -54,8 +54,8 @@ useful.Zoom.prototype.Controls = function (parent) {
 	this.redraw = function () {
 		var zoomIn = this.zoomIn,
 			zoomOut = this.zoomOut,
-			dimensions = this.model.dimensions,
-			transformation = this.model.transformation;
+			dimensions = this.config.dimensions,
+			transformation = this.config.transformation;
 		// disable the zoom in button at max zoom
 		zoomIn.className = (transformation.zoom < dimensions.maxZoom) ?
 			zoomIn.className.replace('disabled', 'enabled'):
@@ -76,8 +76,8 @@ useful.Zoom.prototype.Controls = function (parent) {
 			// restore the touch events
 			_this.parent.gestures(true);
 			// apply the zoom factor
-			var transformation = _this.model.transformation,
-				dimensions = _this.model.dimensions;
+			var transformation = _this.config.transformation,
+				dimensions = _this.config.dimensions;
 			// apply the zoom factor to the transformation
 			transformation.zoom = Math.max(Math.min(transformation.zoom * factor, dimensions.maxZoom), 1);
 			// redraw

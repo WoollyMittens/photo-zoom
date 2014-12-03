@@ -17,7 +17,7 @@ useful.Zoom.prototype.Styling = function (parent) {
 
 	"use strict";
 	this.parent = parent;
-	this.model = parent.model;
+	this.config = parent.config;
 	this.element = parent.element;
 
 	// METHODS
@@ -30,24 +30,24 @@ useful.Zoom.prototype.Styling = function (parent) {
 		var sheet = style.sheet || style.styleSheet;
 		// add the custom styles
 		if (sheet.insertRule) {
-			if (this.model.colorPassive) {
-				sheet.insertRule(".useful-zoom-controls button {background-color : " + this.model.colorPassive + " !important;}", 0);
+			if (this.config.colorPassive) {
+				sheet.insertRule(".useful-zoom-controls button {background-color : " + this.config.colorPassive + " !important;}", 0);
 			}
-			if (this.model.colorHover) {
-				sheet.insertRule(".useful-zoom-controls button:hover, .useful-zoom button:active {background-color : " + this.model.colorHover + " !important;}", 0);
+			if (this.config.colorHover) {
+				sheet.insertRule(".useful-zoom-controls button:hover, .useful-zoom button:active {background-color : " + this.config.colorHover + " !important;}", 0);
 			}
-			if (this.model.colorDisabled) {
-				sheet.insertRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover {background-color : " + this.model.colorDisabled + " !important;}", 0);
+			if (this.config.colorDisabled) {
+				sheet.insertRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover {background-color : " + this.config.colorDisabled + " !important;}", 0);
 			}
 		} else {
-			if (this.model.colorPassive) {
-				sheet.addRule(".useful-zoom-controls button", "background-color : " + this.model.colorPassive + " !important;", 0);
+			if (this.config.colorPassive) {
+				sheet.addRule(".useful-zoom-controls button", "background-color : " + this.config.colorPassive + " !important;", 0);
 			}
-			if (this.model.colorHover) {
-				sheet.addRule(".useful-zoom-controls button:hover, .useful-zoom button:active", "background-color : " + this.model.colorHover + " !important;", 0);
+			if (this.config.colorHover) {
+				sheet.addRule(".useful-zoom-controls button:hover, .useful-zoom button:active", "background-color : " + this.config.colorHover + " !important;", 0);
 			}
-			if (this.model.colorDisabled) {
-				sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.model.colorDisabled + " !important;", 0);
+			if (this.config.colorDisabled) {
+				sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.config.colorDisabled + " !important;", 0);
 			}
 		}
 	};
@@ -56,14 +56,14 @@ useful.Zoom.prototype.Styling = function (parent) {
 		// get the original link
 		var link = this.element.getElementsByTagName('a')[0];
 		// store the image source
-		this.model.tileUrl = link.getAttribute('href');
+		this.config.tileUrl = link.getAttribute('href');
 		// store the starting dimensions
-		this.model.dimensions.width = this.element.offsetWidth;
-		this.model.dimensions.height = this.element.offsetHeight;
+		this.config.dimensions.width = this.element.offsetWidth;
+		this.config.dimensions.height = this.element.offsetHeight;
 		// store the maximum dimensions
-		this.model.dimensions.maxWidth = parseInt(link.getAttribute('data-width'));
-		this.model.dimensions.maxHeight = parseInt(link.getAttribute('data-height'));
-		this.model.dimensions.maxZoom = this.model.dimensions.maxWidth / this.model.dimensions.width;
+		this.config.dimensions.maxWidth = parseInt(link.getAttribute('data-width'));
+		this.config.dimensions.maxHeight = parseInt(link.getAttribute('data-height'));
+		this.config.dimensions.maxZoom = this.config.dimensions.maxWidth / this.config.dimensions.width;
 	};
 
 	// STARTUP

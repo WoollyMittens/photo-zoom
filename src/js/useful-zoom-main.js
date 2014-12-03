@@ -11,20 +11,21 @@ var useful = useful || {};
 useful.Zoom = useful.Zoom || function () {};
 
 // extend the constructor
-useful.Zoom.prototype.init = function (model) {
+useful.Zoom.prototype.Main = function (config, context) {
 
 	// PROPERTIES
 
 	"use strict";
-	this.model = model;
-	this.element = model.element;
-	this.model.transformation = {
+	this.context = context;
+	this.config = config;
+	this.element = config.element;
+	this.config.transformation = {
 		'left' : 0.5,
 		'top' : 0.5,
 		'zoom' : 1,
 		'rotate' : 0
 	};
-	this.model.dimensions = {
+	this.config.dimensions = {
 		'width' : null,
 		'height' : null,
 		'maxWidth' : null,
@@ -33,10 +34,10 @@ useful.Zoom.prototype.init = function (model) {
 
 	// OBJECTS
 
-	this.styling = new this.Styling(this);
-	this.overlay = new this.Overlay(this);
-	this.controls = new this.Controls(this);
-	this.touch = new this.Touch(this);
+	this.styling = new this.context.Styling(this);
+	this.overlay = new this.context.Overlay(this);
+	this.controls = new this.context.Controls(this);
+	this.touch = new this.context.Touch(this);
 
 	// METHODS
 
@@ -65,10 +66,10 @@ useful.Zoom.prototype.init = function (model) {
 
 	this.transform = function (transformation) {
 		// apply the transformation
-		this.model.transformation.left = Math.max(Math.min(transformation.left, 1), 0) || this.model.transformation.left;
-		this.model.transformation.top = Math.max(Math.min(transformation.top, 1), 0) || this.model.transformation.top;
-		this.model.transformation.zoom = Math.max(Math.min(transformation.zoom, this.model.dimensions.maxZoom), 1) || this.model.transformation.zoom;
-		this.model.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0) || this.model.transformation.rotate;
+		this.config.transformation.left = Math.max(Math.min(transformation.left, 1), 0) || this.config.transformation.left;
+		this.config.transformation.top = Math.max(Math.min(transformation.top, 1), 0) || this.config.transformation.top;
+		this.config.transformation.zoom = Math.max(Math.min(transformation.zoom, this.config.dimensions.maxZoom), 1) || this.config.transformation.zoom;
+		this.config.transformation.rotate = Math.max(Math.min(transformation.rotate, 359), 0) || this.config.transformation.rotate;
 		// activate the transition
 		this.overlay.transitions(true);
 		// trigger the transformation
@@ -77,43 +78,43 @@ useful.Zoom.prototype.init = function (model) {
 	};
 	this.moveBy = function (x,y) {
 		this.moveTo(
-			this.model.transformation.left - x,
-			this.model.transformation.top - y
+			this.config.transformation.left - x,
+			this.config.transformation.top - y
 		);
 	};
 	this.moveTo = function (x,y) {
 		// apply the translation
-		this.model.transformation.left = x;
-		this.model.transformation.top = y;
+		this.config.transformation.left = x;
+		this.config.transformation.top = y;
 		// apply the limits
-		this.model.transformation.left = Math.max(Math.min(this.model.transformation.left, 1), 0);
-		this.model.transformation.top = Math.max(Math.min(this.model.transformation.top, 1), 0);
+		this.config.transformation.left = Math.max(Math.min(this.config.transformation.left, 1), 0);
+		this.config.transformation.top = Math.max(Math.min(this.config.transformation.top, 1), 0);
 		// redraw the display
 		this.overlay.redraw();
 	};
 	this.zoomBy = function (z) {
 		this.zoomTo(
-			this.model.transformation.zoom + z
+			this.config.transformation.zoom + z
 		);
 	};
 	this.zoomTo = function (z) {
 		// apply the translation
-		this.model.transformation.zoom = z;
+		this.config.transformation.zoom = z;
 		// apply the limits
-		this.model.transformation.zoom = Math.max(Math.min(this.model.transformation.zoom, this.model.dimensions.maxZoom), 1);
+		this.config.transformation.zoom = Math.max(Math.min(this.config.transformation.zoom, this.config.dimensions.maxZoom), 1);
 		// redraw the display
 		this.overlay.redraw();
 	};
 	this.rotateBy = function (r) {
 		this.rotateTo(
-			this.model.transformation.rotate + r
+			this.config.transformation.rotate + r
 		);
 	};
 	this.rotateTo = function (r) {
 		// apply the translation
-		this.model.transformation.rotate += r;
+		this.config.transformation.rotate += r;
 		// apply the limits
-		this.model.transformation.rotate = Math.max(Math.min(this.model.transformation.rotate, 359), 0);
+		this.config.transformation.rotate = Math.max(Math.min(this.config.transformation.rotate, 359), 0);
 		// redraw the display
 		this.overlay.redraw();
 	};
@@ -121,12 +122,11 @@ useful.Zoom.prototype.init = function (model) {
 	// STARTUP
 
 	this.redraw();
-	this.init = function () {};
 	return this;
 
 };
 
 // return as a require.js module
 if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Zoom;
+	exports = module.exports = useful.Zoom.Main;
 }
