@@ -22,7 +22,7 @@ useful.Zoom.prototype.Styling = function (parent) {
 
 	// METHODS
 
-	this.apply = function () {
+	this.init = function () {
 		// create a custom stylesheet
 		var style = document.createElement("style");
 		if (navigator.userAgent.match(/webkit/gi)) { style.appendChild(document.createTextNode("")); }
@@ -50,6 +50,8 @@ useful.Zoom.prototype.Styling = function (parent) {
 				sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.config.colorDisabled + " !important;", 0);
 			}
 		}
+		// return the object
+		return this;
 	};
 
 	this.measure = function () {
@@ -65,10 +67,6 @@ useful.Zoom.prototype.Styling = function (parent) {
 		this.config.dimensions.maxHeight = parseInt(link.getAttribute('data-height'));
 		this.config.dimensions.maxZoom = this.config.dimensions.maxWidth / this.config.dimensions.width;
 	};
-
-	// STARTUP
-
-	this.apply();
 
 };
 

@@ -29,7 +29,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 
 	// METHODS
 
-	this.start = function () {
+	this.init = function () {
 		// get the original image
 		var image = this.parent.element.getElementsByTagName('img')[0];
 		// create an overlay
@@ -41,7 +41,10 @@ useful.Zoom.prototype.Overlay = function (parent) {
 		this.parent.element.appendChild(this.element);
 		// hide the original image
 		image.style.visibility = 'hidden';
+		// return the object
+		return this;
 	};
+
 	this.redraw = function () {
 		// get the transformation settings from the parent object
 		var _this = this, transformation = this.config.transformation;
@@ -75,12 +78,11 @@ useful.Zoom.prototype.Overlay = function (parent) {
 			_this.populate();
 		}, 300);
 	};
+
 	this.measure = function () {
 		// get the desired transformation
 		var transformation = this.config.transformation,
 			area = this.config.area;
-		// report the transformation
-		console.log('transformation:', transformation);
 		// calculate the visible area
 		area.size = 1 / transformation.zoom;
 		area.left = Math.max(transformation.left - area.size / 2, 0);
@@ -88,6 +90,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 		area.right = Math.min(area.left + area.size, 1);
 		area.bottom = Math.min(area.top + area.size, 1);
 	};
+
 	this.clean = function () {
 		// for all existing tiles
 		for (var name in this.tiles) {
@@ -97,6 +100,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 			}
 		}
 	};
+
 	this.populate = function () {
 		// get the component's dimensions
 		var dimensions = this.config.dimensions,
@@ -128,22 +132,19 @@ useful.Zoom.prototype.Overlay = function (parent) {
 						'top' : row / rows,
 						'right' : 1 - (col + 1) / cols,
 						'bottom' : 1 - (row + 1) / rows
-					});
+					}).init();
 					// increase the tile count
 					this.index += 1;
 				}
 			}
 		}
 	};
+	
 	this.transitions = function (status) {
 		this.element.className = (status) ?
 			this.element.className + ' useful-zoom-transition':
 			this.element.className.replace(/useful-zoom-transition| useful-zoom-transition/g, '');
 	};
-
-	// STARTUP
-
-	this.start();
 
 };
 

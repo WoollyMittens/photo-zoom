@@ -19,6 +19,7 @@ useful.Zoom.prototype.Main = function (config, context) {
 	this.context = context;
 	this.config = config;
 	this.element = config.element;
+
 	this.config.transformation = {
 		'left' : 0.5,
 		'top' : 0.5,
@@ -34,12 +35,19 @@ useful.Zoom.prototype.Main = function (config, context) {
 
 	// OBJECTS
 
-	this.styling = new this.context.Styling(this);
-	this.overlay = new this.context.Overlay(this);
-	this.controls = new this.context.Controls(this);
-	this.touch = new this.context.Touch(this);
+	this.styling = new this.context.Styling(this).init();
+	this.overlay = new this.context.Overlay(this).init();
+	this.controls = new this.context.Controls(this).init();
+	this.touch = new this.context.Touch(this).init();
 
 	// METHODS
+
+	this.init = function () {
+		// first redraw
+		this.redraw();
+		// return the object
+		return this;
+	};
 
 	this.redraw = function () {
 		// measure the dimensions, maximum zoom and aspect ratio
@@ -49,14 +57,17 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// redraw the overlay
 		this.overlay.redraw();
 	};
+
 	this.update = function () {
 		// redraw the controls
 		this.controls.redraw();
 	};
+
 	this.gestures = function (status) {
 		// enable or disable the touch controls
 		this.touch.pause(!status);
 	};
+
 	this.transitions = function (status) {
 		// enable or disable the transitions on the overlays
 		this.overlay.transitions(status);
@@ -74,14 +85,16 @@ useful.Zoom.prototype.Main = function (config, context) {
 		this.overlay.transitions(true);
 		// trigger the transformation
 		var _this = this;
-		setTimeout(function () { _this.overlay.redraw(); }, 0);
+		setTimeout(function () { _this.redraw(); }, 0);
 	};
+
 	this.moveBy = function (x,y) {
 		this.moveTo(
 			this.config.transformation.left - x,
 			this.config.transformation.top - y
 		);
 	};
+
 	this.moveTo = function (x,y) {
 		// apply the translation
 		this.config.transformation.left = x;
@@ -92,11 +105,13 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// redraw the display
 		this.overlay.redraw();
 	};
+
 	this.zoomBy = function (z) {
 		this.zoomTo(
 			this.config.transformation.zoom + z
 		);
 	};
+
 	this.zoomTo = function (z) {
 		// apply the translation
 		this.config.transformation.zoom = z;
@@ -105,11 +120,13 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// redraw the display
 		this.overlay.redraw();
 	};
+
 	this.rotateBy = function (r) {
 		this.rotateTo(
 			this.config.transformation.rotate + r
 		);
 	};
+
 	this.rotateTo = function (r) {
 		// apply the translation
 		this.config.transformation.rotate += r;
@@ -118,11 +135,6 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// redraw the display
 		this.overlay.redraw();
 	};
-
-	// STARTUP
-
-	this.redraw();
-	return this;
 
 };
 

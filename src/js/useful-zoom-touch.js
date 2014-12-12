@@ -22,7 +22,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 
 	// METHODS
 
-	this.add = function () {
+	this.init = function () {
 		// make the dimensions update themselves upon resize
 		window.addEventListener('resize', this.onResize());
 		// add touch event handlers
@@ -44,7 +44,10 @@ useful.Zoom.prototype.Touch = function (parent) {
 		// cancel transitions afterwards
 		this.element.addEventListener('transitionEnd', this.afterTransitions());
 		this.element.addEventListener('webkitTransitionEnd', this.afterTransitions());
+		// return the object
+		return this;
 	};
+
 	this.pause = function (status) {
 		// pause or unpause the touch controls
 		this.gestures.paused = status;
@@ -59,6 +62,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			_this.parent.redraw();
 		};
 	};
+
 	this.onDrag = function () {
 		var _this = this;
 		return function (coords) {
@@ -69,6 +73,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			);
 		};
 	};
+
 	this.onPinch = function () {
 		var _this = this;
 		return function (coords) {
@@ -78,6 +83,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			);
 		};
 	};
+
 	this.onTwist = function () {
 		var _this = this;
 		return function (coords) {
@@ -87,6 +93,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			);
 		};
 	};
+
 	this.onDoubleTap = function () {
 		var _this = this;
 		return function (coords) {
@@ -99,16 +106,13 @@ useful.Zoom.prototype.Touch = function (parent) {
 			});
 		};
 	};
+
 	this.afterTransitions = function () {
 		var _this = this;
 		return function () {
 			_this.parent.transitions(false);
 		};
 	};
-
-	// STARTUP
-
-	this.add();
 
 };
 

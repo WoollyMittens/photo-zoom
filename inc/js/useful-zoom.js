@@ -11,39 +11,157 @@ var useful = useful || {};
 useful.Gestures = useful.Gestures || function () {};
 
 // extend the constructor
+useful.Gestures.prototype.Main = function (config, context) {
+
+	// PROPERTIES
+
+	"use strict";
+	this.config = config;
+	this.context = context;
+	this.element = config.element;
+	this.paused = false;
+
+	// METHODS
+
+	this.init = function () {
+		// check the configuration properties
+		this.config = this.checkConfig(config);
+		// add the single touch events
+		this.single = new this.context.Single(this).init();
+		// add the multi touch events
+		this.multi = new this.context.Multi(this).init();
+		// return the object
+		return this;
+	};
+
+	this.checkConfig = function (config) {
+		// add default values for missing ones
+		config.threshold = config.threshold || 50;
+		config.increment = config.increment || 0.1;
+		// cancel all events by default
+		if (config.cancelTouch === undefined || config.cancelTouch === null) { config.cancelTouch = true; }
+		if (config.cancelGesture === undefined || config.cancelGesture === null) { config.cancelGesture = true; }
+		// add dummy event handlers for missing ones
+		config.swipeUp = config.swipeUp || function () {};
+		config.swipeLeft = config.swipeLeft || function () {};
+		config.swipeRight = config.swipeRight || function () {};
+		config.swipeDown = config.swipeDown || function () {};
+		config.drag = config.drag || function () {};
+		config.pinch = config.pinch || function () {};
+		config.twist = config.twist || function () {};
+		config.doubleTap = config.doubleTap || function () {};
+		// return the fixed config
+		return config;
+	};
+
+	this.readEvent = function (event) {
+		var coords = {}, offsets;
+		// try all likely methods of storing coordinates in an event
+		if (event.touches && event.touches[0]) {
+			coords.x = event.touches[0].pageX;
+			coords.y = event.touches[0].pageY;
+		} else if (event.pageX !== undefined) {
+			coords.x = event.pageX;
+			coords.y = event.pageY;
+		} else {
+			coords.x = event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft);
+			coords.y = event.clientY + (document.documentElement.scrollTop || document.body.scrollTop);
+		}
+		return coords;
+	};
+
+	this.correctOffset = function (element) {
+		var offsetX = 0, offsetY = 0;
+		// if there is an offset
+		if (element.offsetParent) {
+			// follow the offsets back to the right parent element
+			while (element !== this.element) {
+				offsetX += element.offsetLeft;
+				offsetY += element.offsetTop;
+				element = element.offsetParent;
+			}
+		}
+		// return the offsets
+		return { 'x' : offsetX, 'y' : offsetY };
+	};
+
+	// EXTERNAL
+
+	this.enableDefaultTouch = function () {
+		this.config.cancelTouch = false;
+	};
+
+	this.disableDefaultTouch = function () {
+		this.config.cancelTouch = true;
+	};
+
+	this.enableDefaultGesture = function () {
+		this.config.cancelGesture = false;
+	};
+
+	this.disableDefaultGesture = function () {
+		this.config.cancelGesture = true;
+	};
+
+};
+
+// return as a require.js module
+if (typeof module !== 'undefined') {
+	exports = module.exports = useful.Gestures.Main;
+}
+
+/*
+	Source:
+	van Creij, Maurice (2014). "useful.gestures.js: A library of useful functions to ease working with touch and gestures.", version 20141127, http://www.woollymittens.nl/.
+
+	License:
+	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+*/
+
+// create the constructor if needed
+var useful = useful || {};
+useful.Gestures = useful.Gestures || function () {};
+
+// extend the constructor
 useful.Gestures.prototype.Multi = function (parent) {
-	// properties
+
+	// PROPERTIES
+
 	"use strict";
 	this.parent = parent;
-	this.cfg = parent.cfg;
-	this.obj = parent.cfg.element;
+	this.config = parent.config;
+	this.element = parent.config.element;
 	this.gestureOrigin = null;
 	this.gestureProgression = null;
-	// methods
-	this.start = function () {
+
+	// METHODS
+
+	this.init = function () {
 		// set the required events for gestures
 		if ('ongesturestart' in window) {
-			this.obj.addEventListener('gesturestart', this.onStartGesture());
-			this.obj.addEventListener('gesturechange', this.onChangeGesture());
-			this.obj.addEventListener('gestureend', this.onEndGesture());
+			this.element.addEventListener('gesturestart', this.onStartGesture());
+			this.element.addEventListener('gesturechange', this.onChangeGesture());
+			this.element.addEventListener('gestureend', this.onEndGesture());
 		} else if ('msgesturestart' in window) {
-			this.obj.addEventListener('msgesturestart', this.onStartGesture());
-			this.obj.addEventListener('msgesturechange', this.onChangeGesture());
-			this.obj.addEventListener('msgestureend', this.onEndGesture());
+			this.element.addEventListener('msgesturestart', this.onStartGesture());
+			this.element.addEventListener('msgesturechange', this.onChangeGesture());
+			this.element.addEventListener('msgestureend', this.onEndGesture());
 		} else {
-			this.obj.addEventListener('touchstart', this.onStartFallback());
-			this.obj.addEventListener('touchmove', this.onChangeFallback());
-			this.obj.addEventListener('touchend', this.onEndFallback());
+			this.element.addEventListener('touchstart', this.onStartFallback());
+			this.element.addEventListener('touchmove', this.onChangeFallback());
+			this.element.addEventListener('touchend', this.onEndFallback());
 		}
-		// disable the start function so it can't be started twice
-		this.init = function () {};
+		// return the object
+		return this;
 	};
+
 	this.cancelGesture = function (event) {
-		if (this.cfg.cancelGesture) {
+		if (this.config.cancelGesture) {
 			event = event || window.event;
 			event.preventDefault();
 		}
 	};
+
 	this.startGesture = function (event) {
 		// if the functionality wasn't paused
 		if (!this.parent.paused) {
@@ -59,6 +177,7 @@ useful.Gestures.prototype.Multi = function (parent) {
 			};
 		}
 	};
+
 	this.changeGesture = function (event) {
 		// if there is an origin
 		if (this.gestureOrigin) {
@@ -68,14 +187,14 @@ useful.Gestures.prototype.Multi = function (parent) {
 			// get the coordinates from the event
 			var coords = this.parent.readEvent(event);
 			// get the gesture parameters
-			this.cfg.pinch({
+			this.config.pinch({
 				'x' : coords.x,
 				'y' : coords.y,
 				'scale' : scale - this.gestureProgression.scale,
 				'event' : event,
 				'target' : this.gestureOrigin.target
 			});
-			this.cfg.twist({
+			this.config.twist({
 				'x' : coords.x,
 				'y' : coords.y,
 				'rotation' : rotation - this.gestureProgression.rotation,
@@ -89,11 +208,14 @@ useful.Gestures.prototype.Multi = function (parent) {
 			};
 		}
 	};
+
 	this.endGesture = function () {
 		// note the start position
 		this.gestureOrigin = null;
 	};
-	// fallback functionality
+
+	// FALLBACK
+
 	this.startFallback = function (event) {
 		// if the functionality wasn't paused
 		if (!this.parent.paused && event.touches.length === 2) {
@@ -110,6 +232,7 @@ useful.Gestures.prototype.Multi = function (parent) {
 			};
 		}
 	};
+
 	this.changeFallback = function (event) {
 		// if there is an origin
 		if (this.gestureOrigin && event.touches.length === 2) {
@@ -121,7 +244,7 @@ useful.Gestures.prototype.Multi = function (parent) {
 			scale += (event.touches[0].pageY - event.touches[1].pageY) / (progression.touches[0].pageY - progression.touches[1].pageY);
 			scale = scale - 2;
 			// get the gesture parameters
-			this.cfg.pinch({
+			this.config.pinch({
 				'x' : coords.x,
 				'y' : coords.y,
 				'scale' : scale,
@@ -137,78 +260,86 @@ useful.Gestures.prototype.Multi = function (parent) {
 			};
 		}
 	};
+
 	this.endFallback = function () {
 		// note the start position
 		this.gestureOrigin = null;
 	};
-	// gesture events
+
+	// GESTURE EVENTS
+
 	this.onStartGesture = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
 			// optionally cancel the default behaviour
-			context.cancelGesture(event);
+			_this.cancelGesture(event);
 			// handle the event
-			context.startGesture(event);
-			context.changeGesture(event);
+			_this.startGesture(event);
+			_this.changeGesture(event);
 		};
 	};
+
 	this.onChangeGesture = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
 			// optionally cancel the default behaviour
-			context.cancelGesture(event);
+			_this.cancelGesture(event);
 			// handle the event
-			context.changeGesture(event);
+			_this.changeGesture(event);
 		};
 	};
+
 	this.onEndGesture = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
 			// handle the event
-			context.endGesture(event);
+			_this.endGesture(event);
 		};
 	};
-	// gesture events
+
+	// FALLBACK EVENTS
+
 	this.onStartFallback = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
 			// optionally cancel the default behaviour
-			//context.cancelGesture(event);
+			//_this.cancelGesture(event);
 			// handle the event
-			context.startFallback(event);
-			context.changeFallback(event);
+			_this.startFallback(event);
+			_this.changeFallback(event);
 		};
 	};
+
 	this.onChangeFallback = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
 			// optionally cancel the default behaviour
-			context.cancelGesture(event);
+			_this.cancelGesture(event);
 			// handle the event
-			context.changeFallback(event);
+			_this.changeFallback(event);
 		};
 	};
+
 	this.onEndFallback = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
 			// handle the event
-			context.endGesture(event);
+			_this.endGesture(event);
 		};
 	};
-	// go
-	this.start();
+
 };
 
 // return as a require.js module
@@ -230,38 +361,44 @@ useful.Gestures = useful.Gestures || function () {};
 
 // extend the constructor
 useful.Gestures.prototype.Single = function (parent) {
-	// properties
+
+	// PROPERTIES
+
 	"use strict";
 	this.parent = parent;
-	this.cfg = parent.cfg;
-	this.obj = parent.cfg.element;
+	this.config = parent.config;
+	this.element = parent.config.element;
 	this.lastTouch = null;
 	this.touchOrigin = null;
 	this.touchProgression = null;
-	// methods
-	this.start = function () {
+
+	// METHODS
+
+	this.init = function () {
 		// set the required events for mouse
-		this.obj.addEventListener('mousedown', this.onStartTouch());
-		this.obj.addEventListener('mousemove', this.onChangeTouch());
+		this.element.addEventListener('mousedown', this.onStartTouch());
+		this.element.addEventListener('mousemove', this.onChangeTouch());
 		document.body.addEventListener('mouseup', this.onEndTouch());
-		this.obj.addEventListener('mousewheel', this.onChangeWheel());
-		if (navigator.userAgent.match(/firefox/gi)) { this.obj.addEventListener('DOMMouseScroll', this.onChangeWheel()); }
+		this.element.addEventListener('mousewheel', this.onChangeWheel());
+		if (navigator.userAgent.match(/firefox/gi)) { this.element.addEventListener('DOMMouseScroll', this.onChangeWheel()); }
 		// set the required events for touch
-		this.obj.addEventListener('touchstart', this.onStartTouch());
-		this.obj.addEventListener('touchmove', this.onChangeTouch());
+		this.element.addEventListener('touchstart', this.onStartTouch());
+		this.element.addEventListener('touchmove', this.onChangeTouch());
 		document.body.addEventListener('touchend', this.onEndTouch());
-		this.obj.addEventListener('mspointerdown', this.onStartTouch());
-		this.obj.addEventListener('mspointermove', this.onChangeTouch());
+		this.element.addEventListener('mspointerdown', this.onStartTouch());
+		this.element.addEventListener('mspointermove', this.onChangeTouch());
 		document.body.addEventListener('mspointerup', this.onEndTouch());
-		// disable the start function so it can't be started twice
-		this.init = function () {};
+		// return the object
+		return this;
 	};
+
 	this.cancelTouch = function (event) {
-		if (this.cfg.cancelTouch) {
+		if (this.config.cancelTouch) {
 			event = event || window.event;
 			event.preventDefault();
 		}
 	};
+
 	this.startTouch = function (event) {
 		// if the functionality wasn't paused
 		if (!this.parent.paused) {
@@ -279,13 +416,14 @@ useful.Gestures.prototype.Single = function (parent) {
 			};
 		}
 	};
+
 	this.changeTouch = function (event) {
 		// if there is an origin
 		if (this.touchOrigin) {
 			// get the coordinates from the event
 			var coords = this.parent.readEvent(event);
 			// get the gesture parameters
-			this.cfg.drag({
+			this.config.drag({
 				'x' : this.touchOrigin.x,
 				'y' : this.touchOrigin.y,
 				'horizontal' : coords.x - this.touchProgression.x,
@@ -300,6 +438,7 @@ useful.Gestures.prototype.Single = function (parent) {
 			};
 		}
 	};
+
 	this.endTouch = function (event) {
 		// if the numbers are valid
 		if (this.touchOrigin && this.touchProgression) {
@@ -317,28 +456,28 @@ useful.Gestures.prototype.Single = function (parent) {
 				new Date().getTime() - this.lastTouch.time > 100
 			) {
 				// treat this as a double tap
-				this.cfg.doubleTap({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'event' : event, 'source' : this.touchOrigin.target});
+				this.config.doubleTap({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'event' : event, 'source' : this.touchOrigin.target});
 			// if the horizontal motion was the largest
 			} else if (Math.abs(distance.x) > Math.abs(distance.y)) {
 				// if there was a right swipe
-				if (distance.x > this.cfg.threshold) {
+				if (distance.x > this.config.threshold) {
 					// report the associated swipe
-					this.cfg.swipeRight({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : distance.x, 'event' : event, 'source' : this.touchOrigin.target});
+					this.config.swipeRight({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : distance.x, 'event' : event, 'source' : this.touchOrigin.target});
 				// else if there was a left swipe
-				} else if (distance.x < -this.cfg.threshold) {
+				} else if (distance.x < -this.config.threshold) {
 					// report the associated swipe
-					this.cfg.swipeLeft({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : -distance.x, 'event' : event, 'source' : this.touchOrigin.target});
+					this.config.swipeLeft({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : -distance.x, 'event' : event, 'source' : this.touchOrigin.target});
 				}
 			// else
 			} else {
 				// if there was a down swipe
-				if (distance.y > this.cfg.threshold) {
+				if (distance.y > this.config.threshold) {
 					// report the associated swipe
-					this.cfg.swipeDown({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : distance.y, 'event' : event, 'source' : this.touchOrigin.target});
+					this.config.swipeDown({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : distance.y, 'event' : event, 'source' : this.touchOrigin.target});
 				// else if there was an up swipe
-				} else if (distance.y < -this.cfg.threshold) {
+				} else if (distance.y < -this.config.threshold) {
 					// report the associated swipe
-					this.cfg.swipeUp({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : -distance.y, 'event' : event, 'source' : this.touchOrigin.target});
+					this.config.swipeUp({'x' : this.touchOrigin.x, 'y' : this.touchOrigin.y, 'distance' : -distance.y, 'event' : event, 'source' : this.touchOrigin.target});
 				}
 			}
 			// store the history of this touch
@@ -352,15 +491,16 @@ useful.Gestures.prototype.Single = function (parent) {
 		this.touchProgression = null;
 		this.touchOrigin = null;
 	};
+
 	this.changeWheel = function (event) {
 		// measure the wheel distance
 		var scale = 1, distance = ((window.event) ? window.event.wheelDelta / 120 : -event.detail / 3);
 		// get the coordinates from the event
 		var coords = this.parent.readEvent(event);
 		// equate wheeling up / down to zooming in / out
-		scale = (distance > 0) ? +this.cfg.increment : scale = -this.cfg.increment;
+		scale = (distance > 0) ? +this.config.increment : scale = -this.config.increment;
 		// report the zoom
-		this.cfg.pinch({
+		this.config.pinch({
 			'x' : coords.x,
 			'y' : coords.y,
 			'scale' : scale,
@@ -368,59 +508,64 @@ useful.Gestures.prototype.Single = function (parent) {
 			'source' : event.target || event.srcElement
 		});
 	};
-	// touch events
+
+	// TOUCH EVENTS
+
 	this.onStartTouch = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
-			// get event object
+			// get event elementect
 			event = event || window.event;
 			// handle the event
-			context.startTouch(event);
-			context.changeTouch(event);
+			_this.startTouch(event);
+			_this.changeTouch(event);
 		};
 	};
+
 	this.onChangeTouch = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
-			// get event object
+			// get event elementect
 			event = event || window.event;
 			// optionally cancel the default behaviour
-			context.cancelTouch(event);
+			_this.cancelTouch(event);
 			// handle the event
-			context.changeTouch(event);
+			_this.changeTouch(event);
 		};
 	};
+
 	this.onEndTouch = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
-			// get event object
+			// get event elementect
 			event = event || window.event;
 			// handle the event
-			context.endTouch(event);
+			_this.endTouch(event);
 		};
 	};
-	// mouse wheel events
+
+	// MOUSE EVENTS
+
 	this.onChangeWheel = function () {
-		// store the context
-		var context = this;
+		// store the _this
+		var _this = this;
 		// return and event handler
 		return function (event) {
-			// get event object
+			// get event elementect
 			event = event || window.event;
 			// optionally cancel the default behaviour
-			context.cancelTouch(event);
+			_this.cancelTouch(event);
 			// handle the event
-			context.changeWheel(event);
+			_this.changeWheel(event);
 		};
 	};
-	// go
-	this.start();
+
 };
 
 // return as a require.js module
@@ -441,85 +586,32 @@ var useful = useful || {};
 useful.Gestures = useful.Gestures || function () {};
 
 // extend the constructor
-useful.Gestures.prototype.init = function (cfg) {
+useful.Gestures.prototype.init = function (config) {
 	// properties
 	"use strict";
-	this.cfg = cfg;
-	this.obj = cfg.element;
-	this.paused = false;
 	// methods
-	this.start = function () {
-		// check the configuration properties
-		this.checkConfig(this.cfg);
-		// add the single touch events
-		this.single = new this.Single(this);
-		// add the multi touch events
-		this.multi = new this.Multi(this);
-		// disable the start function so it can't be started twice
-		this.init = function () {};
+	this.only = function (config) {
+		// start an instance of the script
+		return new this.Main(config, this).init();
 	};
-	this.checkConfig = function (config) {
-		// add default values for missing ones
-		config.threshold = config.threshold || 50;
-		config.increment = config.increment || 0.1;
-		// cancel all events by default
-		if (config.cancelTouch === undefined || config.cancelTouch === null) { config.cancelTouch = true; }
-		if (config.cancelGesture === undefined || config.cancelGesture === null) { config.cancelGesture = true; }
-		// add dummy event handlers for missing ones
-		config.swipeUp = config.swipeUp || function () {};
-		config.swipeLeft = config.swipeLeft || function () {};
-		config.swipeRight = config.swipeRight || function () {};
-		config.swipeDown = config.swipeDown || function () {};
-		config.drag = config.drag || function () {};
-		config.pinch = config.pinch || function () {};
-		config.twist = config.twist || function () {};
-		config.doubleTap = config.doubleTap || function () {};
-	};
-	this.readEvent = function (event) {
-		var coords = {}, offsets;
-		// try all likely methods of storing coordinates in an event
-		if (event.touches && event.touches[0]) {
-			coords.x = event.touches[0].pageX;
-			coords.y = event.touches[0].pageY;
-		} else if (event.pageX !== undefined) {
-			coords.x = event.pageX;
-			coords.y = event.pageY;
-		} else {
-			coords.x = event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft);
-			coords.y = event.clientY + (document.documentElement.scrollTop || document.body.scrollTop);
+	this.each = function (config) {
+		var _config, _context = this, instances = [];
+		// for all element
+		for (var a = 0, b = config.elements.length; a < b; a += 1) {
+			// clone the configuration
+			_config = Object.create(config);
+			// insert the current element
+			_config.element = config.elements[a];
+			// delete the list of elements from the clone
+			delete _config.elements;
+			// start a new instance of the object
+			instances[a] = new this.Main(_config, _context).init();
 		}
-		return coords;
+		// return the instances
+		return instances;
 	};
-	this.correctOffset = function (element) {
-		var offsetX = 0, offsetY = 0;
-		// if there is an offset
-		if (element.offsetParent) {
-			// follow the offsets back to the right parent element
-			while (element !== this.obj) {
-				offsetX += element.offsetLeft;
-				offsetY += element.offsetTop;
-				element = element.offsetParent;
-			}
-		}
-		// return the offsets
-		return { 'x' : offsetX, 'y' : offsetY };
-	};
-	// external API
-	this.enableDefaultTouch = function () {
-		this.cfg.cancelTouch = false;
-	};
-	this.disableDefaultTouch = function () {
-		this.cfg.cancelTouch = true;
-	};
-	this.enableDefaultGesture = function () {
-		this.cfg.cancelGesture = false;
-	};
-	this.disableDefaultGesture = function () {
-		this.cfg.cancelGesture = true;
-	};
-	// go
-	this.start();
-	return this;
+	// return a single or multiple instances of the script
+	return (config.elements) ? this.each(config) : this.only(config);
 };
 
 // return as a require.js module
@@ -834,7 +926,7 @@ useful.Zoom.prototype.Controls = function (parent) {
 
 	// METHODS
 
-	this.start = function () {
+	this.init = function () {
 		// create a controls
 		this.element = document.createElement('menu');
 		this.element.className = 'useful-zoom-controls';
@@ -858,6 +950,8 @@ useful.Zoom.prototype.Controls = function (parent) {
 		this.element.appendChild(this.zoomOut);
 		// add the controls to the parent
 		this.parent.element.appendChild(this.element);
+		// return the object
+		return this;
 	};
 
 	this.redraw = function () {
@@ -904,10 +998,6 @@ useful.Zoom.prototype.Controls = function (parent) {
 		};
 	};
 
-	// STARTUP
-
-	this.start();
-
 };
 
 // return as a require.js module
@@ -936,6 +1026,7 @@ useful.Zoom.prototype.Main = function (config, context) {
 	this.context = context;
 	this.config = config;
 	this.element = config.element;
+
 	this.config.transformation = {
 		'left' : 0.5,
 		'top' : 0.5,
@@ -951,12 +1042,19 @@ useful.Zoom.prototype.Main = function (config, context) {
 
 	// OBJECTS
 
-	this.styling = new this.context.Styling(this);
-	this.overlay = new this.context.Overlay(this);
-	this.controls = new this.context.Controls(this);
-	this.touch = new this.context.Touch(this);
+	this.styling = new this.context.Styling(this).init();
+	this.overlay = new this.context.Overlay(this).init();
+	this.controls = new this.context.Controls(this).init();
+	this.touch = new this.context.Touch(this).init();
 
 	// METHODS
+
+	this.init = function () {
+		// first redraw
+		this.redraw();
+		// return the object
+		return this;
+	};
 
 	this.redraw = function () {
 		// measure the dimensions, maximum zoom and aspect ratio
@@ -966,14 +1064,17 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// redraw the overlay
 		this.overlay.redraw();
 	};
+
 	this.update = function () {
 		// redraw the controls
 		this.controls.redraw();
 	};
+
 	this.gestures = function (status) {
 		// enable or disable the touch controls
 		this.touch.pause(!status);
 	};
+
 	this.transitions = function (status) {
 		// enable or disable the transitions on the overlays
 		this.overlay.transitions(status);
@@ -991,14 +1092,16 @@ useful.Zoom.prototype.Main = function (config, context) {
 		this.overlay.transitions(true);
 		// trigger the transformation
 		var _this = this;
-		setTimeout(function () { _this.overlay.redraw(); }, 0);
+		setTimeout(function () { _this.redraw(); }, 0);
 	};
+
 	this.moveBy = function (x,y) {
 		this.moveTo(
 			this.config.transformation.left - x,
 			this.config.transformation.top - y
 		);
 	};
+
 	this.moveTo = function (x,y) {
 		// apply the translation
 		this.config.transformation.left = x;
@@ -1009,11 +1112,13 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// redraw the display
 		this.overlay.redraw();
 	};
+
 	this.zoomBy = function (z) {
 		this.zoomTo(
 			this.config.transformation.zoom + z
 		);
 	};
+
 	this.zoomTo = function (z) {
 		// apply the translation
 		this.config.transformation.zoom = z;
@@ -1022,11 +1127,13 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// redraw the display
 		this.overlay.redraw();
 	};
+
 	this.rotateBy = function (r) {
 		this.rotateTo(
 			this.config.transformation.rotate + r
 		);
 	};
+
 	this.rotateTo = function (r) {
 		// apply the translation
 		this.config.transformation.rotate += r;
@@ -1035,11 +1142,6 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// redraw the display
 		this.overlay.redraw();
 	};
-
-	// STARTUP
-
-	this.redraw();
-	return this;
 
 };
 
@@ -1079,7 +1181,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 
 	// METHODS
 
-	this.start = function () {
+	this.init = function () {
 		// get the original image
 		var image = this.parent.element.getElementsByTagName('img')[0];
 		// create an overlay
@@ -1091,7 +1193,10 @@ useful.Zoom.prototype.Overlay = function (parent) {
 		this.parent.element.appendChild(this.element);
 		// hide the original image
 		image.style.visibility = 'hidden';
+		// return the object
+		return this;
 	};
+
 	this.redraw = function () {
 		// get the transformation settings from the parent object
 		var _this = this, transformation = this.config.transformation;
@@ -1125,12 +1230,11 @@ useful.Zoom.prototype.Overlay = function (parent) {
 			_this.populate();
 		}, 300);
 	};
+
 	this.measure = function () {
 		// get the desired transformation
 		var transformation = this.config.transformation,
 			area = this.config.area;
-		// report the transformation
-		console.log('transformation:', transformation);
 		// calculate the visible area
 		area.size = 1 / transformation.zoom;
 		area.left = Math.max(transformation.left - area.size / 2, 0);
@@ -1138,6 +1242,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 		area.right = Math.min(area.left + area.size, 1);
 		area.bottom = Math.min(area.top + area.size, 1);
 	};
+
 	this.clean = function () {
 		// for all existing tiles
 		for (var name in this.tiles) {
@@ -1147,6 +1252,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 			}
 		}
 	};
+
 	this.populate = function () {
 		// get the component's dimensions
 		var dimensions = this.config.dimensions,
@@ -1178,22 +1284,19 @@ useful.Zoom.prototype.Overlay = function (parent) {
 						'top' : row / rows,
 						'right' : 1 - (col + 1) / cols,
 						'bottom' : 1 - (row + 1) / rows
-					});
+					}).init();
 					// increase the tile count
 					this.index += 1;
 				}
 			}
 		}
 	};
+	
 	this.transitions = function (status) {
 		this.element.className = (status) ?
 			this.element.className + ' useful-zoom-transition':
 			this.element.className.replace(/useful-zoom-transition| useful-zoom-transition/g, '');
 	};
-
-	// STARTUP
-
-	this.start();
 
 };
 
@@ -1226,7 +1329,7 @@ useful.Zoom.prototype.Styling = function (parent) {
 
 	// METHODS
 
-	this.apply = function () {
+	this.init = function () {
 		// create a custom stylesheet
 		var style = document.createElement("style");
 		if (navigator.userAgent.match(/webkit/gi)) { style.appendChild(document.createTextNode("")); }
@@ -1254,6 +1357,8 @@ useful.Zoom.prototype.Styling = function (parent) {
 				sheet.addRule(".useful-zoom-controls button.disabled, .useful-zoom-controls button.disabled:hover", "background-color : " + this.config.colorDisabled + " !important;", 0);
 			}
 		}
+		// return the object
+		return this;
 	};
 
 	this.measure = function () {
@@ -1269,10 +1374,6 @@ useful.Zoom.prototype.Styling = function (parent) {
 		this.config.dimensions.maxHeight = parseInt(link.getAttribute('data-height'));
 		this.config.dimensions.maxZoom = this.config.dimensions.maxWidth / this.config.dimensions.width;
 	};
-
-	// STARTUP
-
-	this.apply();
 
 };
 
@@ -1314,28 +1415,7 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 
 	// METHODS
 
-	this.redraw = function () {
-		var area = this.config.area;
-		// if the index of the tile is too low
-		if (
-			this.index < this.parent.index - this.config.tileCache
-		) {
-			// remove the tile
-			this.remove();
-		// if it exists within the visible area and at the zoom level
-		} else if (
-			(this.right >= area.left || this.left <= area.right) &&
-			(this.bottom >= area.top || this.top <= area.bottom)
-		) {
-			// show the tile
-			this.show();
-		// else
-		} else {
-			// hide the tile
-			this.hide();
-		}
-	};
-	this.add = function () {
+	this.init = function () {
 		// adjust if the tile is across the right edge and not square
 		var rightCor = 1;
 		if (this.right > 1) {
@@ -1369,25 +1449,48 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 			.replace('{height}', Math.round(this.config.tileSize * bottomCor)) + ')';
 		// add the tile to the layer
 		this.parent.element.appendChild(this.element);
+		// return the object
+		return this;
 	};
+
+	this.redraw = function () {
+		var area = this.config.area;
+		// if the index of the tile is too low
+		if (
+			this.index < this.parent.index - this.config.tileCache
+		) {
+			// remove the tile
+			this.remove();
+			// if it exists within the visible area and at the zoom level
+		} else if (
+			(this.right >= area.left || this.left <= area.right) &&
+			(this.bottom >= area.top || this.top <= area.bottom)
+		) {
+			// show the tile
+			this.show();
+			// else
+		} else {
+			// hide the tile
+			this.hide();
+		}
+	};
+
 	this.remove = function () {
 		// remove the tile
 		this.element.parentNode.removeChild(this.element);
 		// remove  the reference
 		delete this.parent.tiles[this.name];
 	};
+
 	this.show = function () {
 		// show the tile
 		this.element.style.display = 'block';
 	};
+	
 	this.hide = function () {
 		// hide the tile
 		this.element.style.display = 'none';
 	};
-
-	// STARTUP
-
-	this.add();
 
 };
 
@@ -1420,7 +1523,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 
 	// METHODS
 
-	this.add = function () {
+	this.init = function () {
 		// make the dimensions update themselves upon resize
 		window.addEventListener('resize', this.onResize());
 		// add touch event handlers
@@ -1442,7 +1545,10 @@ useful.Zoom.prototype.Touch = function (parent) {
 		// cancel transitions afterwards
 		this.element.addEventListener('transitionEnd', this.afterTransitions());
 		this.element.addEventListener('webkitTransitionEnd', this.afterTransitions());
+		// return the object
+		return this;
 	};
+
 	this.pause = function (status) {
 		// pause or unpause the touch controls
 		this.gestures.paused = status;
@@ -1457,6 +1563,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			_this.parent.redraw();
 		};
 	};
+
 	this.onDrag = function () {
 		var _this = this;
 		return function (coords) {
@@ -1467,6 +1574,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			);
 		};
 	};
+
 	this.onPinch = function () {
 		var _this = this;
 		return function (coords) {
@@ -1476,6 +1584,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			);
 		};
 	};
+
 	this.onTwist = function () {
 		var _this = this;
 		return function (coords) {
@@ -1485,6 +1594,7 @@ useful.Zoom.prototype.Touch = function (parent) {
 			);
 		};
 	};
+
 	this.onDoubleTap = function () {
 		var _this = this;
 		return function (coords) {
@@ -1497,16 +1607,13 @@ useful.Zoom.prototype.Touch = function (parent) {
 			});
 		};
 	};
+
 	this.afterTransitions = function () {
 		var _this = this;
 		return function () {
 			_this.parent.transitions(false);
 		};
 	};
-
-	// STARTUP
-
-	this.add();
 
 };
 
@@ -1528,32 +1635,32 @@ var useful = useful || {};
 useful.Zoom = useful.Zoom || function () {};
 
 // extend the constructor
-useful.Zoom.prototype.init = function (cfg) {
+useful.Zoom.prototype.init = function (config) {
 	// properties
 	"use strict";
 	// methods
-	this.only = function (cfg) {
+	this.only = function (config) {
 		// start an instance of the script
-		return new this.Main(cfg, this);
+		return new this.Main(config, this).init();
 	};
-	this.each = function (cfg) {
-		var _cfg, instances = [];
+	this.each = function (config) {
+		var _config, _context = this, instances = [];
 		// for all element
-		for (var a = 0, b = cfg.elements.length; a < b; a += 1) {
-			// clone the cfguration
-			_cfg = Object.create(cfg);
+		for (var a = 0, b = config.elements.length; a < b; a += 1) {
+			// clone the configuration
+			_config = Object.create(config);
 			// insert the current element
-			_cfg.element = cfg.elements[a];
+			_config.element = config.elements[a];
 			// delete the list of elements from the clone
-			delete _cfg.elements;
+			delete _config.elements;
 			// start a new instance of the object
-			instances[a] = new this.Main(_cfg, this);
+			instances[a] = new this.Main(_config, _context).init();
 		}
 		// return the instances
 		return instances;
 	};
 	// return a single or multiple instances of the script
-	return (cfg.elements) ? this.each(cfg) : this.only(cfg);
+	return (config.elements) ? this.each(config) : this.only(config);
 };
 
 // return as a require.js module

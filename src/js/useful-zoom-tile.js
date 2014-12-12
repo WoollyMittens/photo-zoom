@@ -31,28 +31,7 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 
 	// METHODS
 
-	this.redraw = function () {
-		var area = this.config.area;
-		// if the index of the tile is too low
-		if (
-			this.index < this.parent.index - this.config.tileCache
-		) {
-			// remove the tile
-			this.remove();
-		// if it exists within the visible area and at the zoom level
-		} else if (
-			(this.right >= area.left || this.left <= area.right) &&
-			(this.bottom >= area.top || this.top <= area.bottom)
-		) {
-			// show the tile
-			this.show();
-		// else
-		} else {
-			// hide the tile
-			this.hide();
-		}
-	};
-	this.add = function () {
+	this.init = function () {
 		// adjust if the tile is across the right edge and not square
 		var rightCor = 1;
 		if (this.right > 1) {
@@ -86,25 +65,48 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 			.replace('{height}', Math.round(this.config.tileSize * bottomCor)) + ')';
 		// add the tile to the layer
 		this.parent.element.appendChild(this.element);
+		// return the object
+		return this;
 	};
+
+	this.redraw = function () {
+		var area = this.config.area;
+		// if the index of the tile is too low
+		if (
+			this.index < this.parent.index - this.config.tileCache
+		) {
+			// remove the tile
+			this.remove();
+			// if it exists within the visible area and at the zoom level
+		} else if (
+			(this.right >= area.left || this.left <= area.right) &&
+			(this.bottom >= area.top || this.top <= area.bottom)
+		) {
+			// show the tile
+			this.show();
+			// else
+		} else {
+			// hide the tile
+			this.hide();
+		}
+	};
+
 	this.remove = function () {
 		// remove the tile
 		this.element.parentNode.removeChild(this.element);
 		// remove  the reference
 		delete this.parent.tiles[this.name];
 	};
+
 	this.show = function () {
 		// show the tile
 		this.element.style.display = 'block';
 	};
+	
 	this.hide = function () {
 		// hide the tile
 		this.element.style.display = 'none';
 	};
-
-	// STARTUP
-
-	this.add();
 
 };
 

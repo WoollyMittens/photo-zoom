@@ -25,7 +25,7 @@ useful.Zoom.prototype.Controls = function (parent) {
 
 	// METHODS
 
-	this.start = function () {
+	this.init = function () {
 		// create a controls
 		this.element = document.createElement('menu');
 		this.element.className = 'useful-zoom-controls';
@@ -49,6 +49,8 @@ useful.Zoom.prototype.Controls = function (parent) {
 		this.element.appendChild(this.zoomOut);
 		// add the controls to the parent
 		this.parent.element.appendChild(this.element);
+		// return the object
+		return this;
 	};
 
 	this.redraw = function () {
@@ -94,10 +96,6 @@ useful.Zoom.prototype.Controls = function (parent) {
 			_this.parent.gestures(false);
 		};
 	};
-
-	// STARTUP
-
-	this.start();
 
 };
 
