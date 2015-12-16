@@ -2,7 +2,7 @@
 
 Pans and zooms images while loading additional detail on the fly.
 
-Try the <a href="http://www.woollymittens.nl/useful/default.php?url=useful-zoom">demo</a>.
+Try the <a href="http://www.woollymittens.nl/default.php?url=useful-zoom">demo</a>.
 
 ## How to include the script
 
@@ -23,7 +23,7 @@ This include can be added to the header or placed inline before the script is in
 ```javascript
 var zoom = new useful.Zoom().init({
 	'element' : document.getElementById('zoom'),
-	'tileSource' : 'inc/php/imageslice.php?src=../../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
+	'tileSource' : 'php/imageslice.php?src=../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
 	'tileCache' : 128,
 	'tileSize' : 128,
 	'allowRotation' : false
@@ -122,15 +122,15 @@ Rotates the canvas to a set number of degrees.
 
 This project uses node.js from http://nodejs.org/
 
-This project uses grunt.js from http://gruntjs.com/
+This project uses gulp.js from http://gulpjs.com/
 
 The following commands are available for development:
 + `npm install` - Installs the prerequisites.
-+ `grunt import` - Re-imports libraries from supporting projects to `./src/libs/` if available under the same folder tree.
-+ `grunt dev` - Builds the project for development purposes.
-+ `grunt prod` - Builds the project for deployment purposes.
-+ `grunt watch` - Continuously recompiles updated files during development sessions.
-+ `grunt serve` - Serves the project on a temporary web server at http://localhost:8000/ .
++ `gulp import` - Re-imports libraries from supporting projects to `./src/libs/` if available under the same folder tree.
++ `gulp dev` - Builds the project for development purposes.
++ `gulp dist` - Builds the project for deployment purposes.
++ `gulp watch` - Continuously recompiles updated files during development sessions.
++ `gulp connect` - Serves the project on a temporary web server at http://localhost:8500/ .
 
 ## License
 

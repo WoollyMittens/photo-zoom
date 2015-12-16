@@ -9,29 +9,39 @@
 // create the constructor if needed
 var useful = useful || {};
 useful.Zoom = useful.Zoom || function () {};
-useful.Zoom.Overlay = useful.Zoom.Overlay || function () {};
 
 // extend the constructor
-useful.Zoom.prototype.Tile = function (parent, properties) {
+useful.Zoom.prototype.Tile = function () {
 
 	// PROPERTIES
 
 	"use strict";
-	this.parent = parent;
-	this.config = parent.config;
+	this.context = null;
+	this.config = null;
 
 	this.element = null;
-	this.name = properties.name;
-	this.index = properties.index;
-	this.zoom = properties.zoom;
-	this.left = properties.left;
-	this.top = properties.top;
-	this.right = properties.right;
-	this.bottom = properties.bottom;
+	this.name = null;
+	this.index = null;
+	this.zoom = null;
+	this.left = null;
+	this.top = null;
+	this.right = null;
+	this.bottom = null;
 
 	// METHODS
 
-	this.init = function () {
+	this.init = function (context, properties) {
+		// store the context
+		this.context = context;
+		this.config = context.config;
+		// update the properties
+		this.name = properties.name;
+		this.index = properties.index;
+		this.zoom = properties.zoom;
+		this.left = properties.left;
+		this.top = properties.top;
+		this.right = properties.right;
+		this.bottom = properties.bottom;
 		// adjust if the tile is across the right edge and not square
 		var rightCor = 1;
 		if (this.right > 1) {
@@ -64,7 +74,7 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 			.replace('{width}', Math.round(this.config.tileSize * rightCor))
 			.replace('{height}', Math.round(this.config.tileSize * bottomCor)) + ')';
 		// add the tile to the layer
-		this.parent.element.appendChild(this.element);
+		this.context.element.appendChild(this.element);
 		// return the object
 		return this;
 	};
@@ -73,7 +83,7 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 		var area = this.config.area;
 		// if the index of the tile is too low
 		if (
-			this.index < this.parent.index - this.config.tileCache
+			this.index < this.context.index - this.config.tileCache
 		) {
 			// remove the tile
 			this.remove();
@@ -95,14 +105,14 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 		// remove the tile
 		this.element.parentNode.removeChild(this.element);
 		// remove  the reference
-		delete this.parent.tiles[this.name];
+		delete this.context.tiles[this.name];
 	};
 
 	this.show = function () {
 		// show the tile
 		this.element.style.display = 'block';
 	};
-	
+
 	this.hide = function () {
 		// hide the tile
 		this.element.style.display = 'none';
@@ -112,5 +122,5 @@ useful.Zoom.prototype.Tile = function (parent, properties) {
 
 // return as a require.js module
 if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Zoom.Overlay.Tile;
+	exports = module.exports = useful.Zoom.Tile;
 }

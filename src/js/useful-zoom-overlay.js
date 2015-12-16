@@ -16,29 +16,34 @@ useful.Zoom.prototype.Overlay = function (parent) {
 	// PROPERTIES
 
 	"use strict";
-	this.parent = parent;
-	this.config = parent.config;
-	this.context = parent.context;
+	this.context = null;
+	this.config = null;
+	this.root = null;
 
 	this.element = null;
 	this.timeout = null;
 	this.tiles = {};
 	this.index = 0;
 	this.updated = 0;
-	this.config.area = {};
 
 	// METHODS
 
-	this.init = function () {
+	this.init = function (context) {
+		// store the context
+		this.context = context;
+		this.config = context.config;
+		this.root = context.context;
+		// reset the area
+		this.config.area = {};
 		// get the original image
-		var image = this.parent.element.getElementsByTagName('img')[0];
+		var image = this.context.element.getElementsByTagName('img')[0];
 		// create an overlay
 		this.element = document.createElement('div');
 		this.element.className = 'useful-zoom-overlay';
 		// add the image as a background
 		this.element.style.backgroundImage = 'url(' + image.getAttribute('src') + ')';
 		// put the overlay into the parent object
-		this.parent.element.appendChild(this.element);
+		this.context.element.appendChild(this.element);
 		// hide the original image
 		image.style.visibility = 'hidden';
 		// return the object
@@ -47,7 +52,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 
 	this.redraw = function () {
 		// get the transformation settings from the parent object
-		var _this = this, transformation = this.config.transformation;
+		var transformation = this.config.transformation;
 		// if the last redraw occurred sufficiently long ago
 		var updated = new Date().getTime();
 		if (updated - this.updated > 20) {
@@ -67,16 +72,18 @@ useful.Zoom.prototype.Overlay = function (parent) {
 		}
 		// repopulate the tiles after interaction stops
 		clearTimeout(this.timeout);
-		this.timeout = setTimeout(function () {
-			// update the parent
-			_this.parent.update();
-			// recalculate the visible area
-			_this.measure();
-			// clean out the older tiles
-			_this.clean();
-			// populate with new tile
-			_this.populate();
-		}, 300);
+		this.timeout = setTimeout(this.update.bind(this), 300);
+	};
+
+	this.update = function () {
+		// update the parent
+		this.context.update();
+		// recalculate the visible area
+		this.measure();
+		// clean out the older tiles
+		this.clean();
+		// populate with new tile
+		this.populate();
 	};
 
 	this.measure = function () {
@@ -124,7 +131,7 @@ useful.Zoom.prototype.Overlay = function (parent) {
 				// if this is a new tile
 				if (this.tiles[tileName] === undefined) {
 					// create a new tile with the name and dimensions (name,index,zoom,left,top,right,bottom)
-					this.tiles[tileName] = new this.context.Tile(this, {
+					this.tiles[tileName] = new this.root.Tile().init(this, {
 						'name' : tileName,
 						'index' : this.index,
 						'zoom' : zoom,
@@ -132,14 +139,14 @@ useful.Zoom.prototype.Overlay = function (parent) {
 						'top' : row / rows,
 						'right' : 1 - (col + 1) / cols,
 						'bottom' : 1 - (row + 1) / rows
-					}).init();
+					});
 					// increase the tile count
 					this.index += 1;
 				}
 			}
 		}
 	};
-	
+
 	this.transitions = function (status) {
 		this.element.className = (status) ?
 			this.element.className + ' useful-zoom-transition':

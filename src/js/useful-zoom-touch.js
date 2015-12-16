@@ -11,20 +11,24 @@ var useful = useful || {};
 useful.Zoom = useful.Zoom || function () {};
 
 // extend the constructor
-useful.Zoom.prototype.Touch = function (parent) {
+useful.Zoom.prototype.Touch = function () {
 
 	// PROPERTIES
 
 	"use strict";
-	this.parent = parent;
-	this.config = parent.config;
-	this.element = parent.element;
+	this.context = null;
+	this.config = null;
+	this.element = null;
 
 	// METHODS
 
-	this.init = function () {
+	this.init = function (context) {
+		// store the context
+		this.context = context;
+		this.config = context.config;
+		this.element = context.element;
 		// make the dimensions update themselves upon resize
-		window.addEventListener('resize', this.onResize());
+		window.addEventListener('resize', this.onResize.bind(this));
 		// add touch event handlers
 		this.gestures = new useful.Gestures().init({
 			'element' : this.element,
@@ -36,14 +40,14 @@ useful.Zoom.prototype.Touch = function (parent) {
 			'swipeUp' : function (coords) {},
 			'swipeRight' : function (coords) {},
 			'swipeDown' : function (coords) {},
-			'drag' : this.onDrag(),
-			'pinch' : this.onPinch(),
-			'twist' : (this.config.allowRotation) ? this.onTwist() : function () {},
-			'doubleTap' : this.onDoubleTap()
+			'drag' : this.onDrag.bind(this),
+			'pinch' : this.onPinch.bind(this),
+			'twist' : (this.config.allowRotation) ? this.onTwist.bind(this) : function () {},
+			'doubleTap' : this.onDoubleTap.bind(this)
 		});
 		// cancel transitions afterwards
-		this.element.addEventListener('transitionEnd', this.afterTransitions());
-		this.element.addEventListener('webkitTransitionEnd', this.afterTransitions());
+		this.element.addEventListener('transitionEnd', this.afterTransitions.bind(this));
+		this.element.addEventListener('webkitTransitionEnd', this.afterTransitions.bind(this));
 		// return the object
 		return this;
 	};
@@ -56,62 +60,44 @@ useful.Zoom.prototype.Touch = function (parent) {
 	// EVENTS
 
 	this.onResize = function () {
-		var _this = this;
-		return function () {
-			// redraw the display
-			_this.parent.redraw();
-		};
+		// redraw the display
+		this.context.redraw();
 	};
 
-	this.onDrag = function () {
-		var _this = this;
-		return function (coords) {
-			// calculate the translation
-			_this.parent.moveBy(
-				coords.horizontal / _this.config.dimensions.width / _this.config.transformation.zoom,
-				coords.vertical / _this.config.dimensions.height / _this.config.transformation.zoom
-			);
-		};
+	this.onDrag = function (coords) {
+		// calculate the translation
+		this.context.moveBy(
+			coords.horizontal / this.config.dimensions.width / this.config.transformation.zoom,
+			coords.vertical / this.config.dimensions.height / this.config.transformation.zoom
+		);
 	};
 
-	this.onPinch = function () {
-		var _this = this;
-		return function (coords) {
-			// calculate the magnification
-			_this.parent.zoomBy(
-				coords.scale * _this.config.transformation.zoom
-			);
-		};
+	this.onPinch = function (coords) {
+		// calculate the magnification
+		this.context.zoomBy(
+			coords.scale * this.config.transformation.zoom
+		);
 	};
 
-	this.onTwist = function () {
-		var _this = this;
-		return function (coords) {
-			// calculate the rotation
-			_this.parent.rotateBy(
-				coords.rotation
-			);
-		};
+	this.onTwist = function (coords) {
+		// calculate the rotation
+		this.context.rotateBy(
+			coords.rotation
+		);
 	};
 
-	this.onDoubleTap = function () {
-		var _this = this;
-		return function (coords) {
-			coords.event.preventDefault();
-			// calculate the zoom
-			_this.parent.transform({
-				'left' : (coords.x / _this.config.dimensions.width - 0.5) / _this.config.transformation.zoom + _this.config.transformation.left,
-				'top' : (coords.y / _this.config.dimensions.height - 0.5) / _this.config.transformation.zoom + _this.config.transformation.top,
-				'zoom' : _this.config.transformation.zoom * 1.5
-			});
-		};
+	this.onDoubleTap = function (coords) {
+		coords.event.preventDefault();
+		// calculate the zoom
+		this.context.transform({
+			'left' : (coords.x / this.config.dimensions.width - 0.5) / this.config.transformation.zoom + this.config.transformation.left,
+			'top' : (coords.y / this.config.dimensions.height - 0.5) / this.config.transformation.zoom + this.config.transformation.top,
+			'zoom' : this.config.transformation.zoom * 1.5
+		});
 	};
 
 	this.afterTransitions = function () {
-		var _this = this;
-		return function () {
-			_this.parent.transitions(false);
-		};
+		this.context.transitions(false);
 	};
 
 };

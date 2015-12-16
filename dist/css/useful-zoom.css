@@ -1,0 +1,116 @@
+/*
+Constants
+*/
+/*
+Hides text in the margin
+*/
+/*
+Turns a button into an icon
+*/
+/*
+Centres a graphic or glyph inside an icon
+*/
+/*
+Offers both the pixel and rem value of a single property
+*/
+/*
+Offers both the pixel and rem values of a shorthand property
+*/
+/*
+Offers the text size as both the pixel and rem value
+*/
+/*
+Adds vendor prefixed to a property
+*/
+/*
+Applies the "clearfix" hack to a container with floating content
+*/
+/*
+Reference Styling for An Interactive Row of Thumbnails
+*/
+.useful-zoom {
+  display: block;
+  margin: 0;
+  padding: 0;
+  max-width: 480px;
+  min-width: 240px;
+  overflow: hidden;
+  padding: 0;
+  position: relative; }
+  .useful-zoom * {
+    box-sizing: border-box; }
+  .useful-zoom a img {
+    display: block;
+    height: auto;
+    width: 100%; }
+  .useful-zoom menu {
+    transition-property: opacity;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    opacity: 0.5; }
+  .useful-zoom:hover menu {
+    opacity: 1; }
+
+.useful-zoom-overlay {
+  background-size: 100% auto;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  z-index: 10; }
+
+.useful-zoom-transition {
+  transition-property: -webkit-transform, -webkit-transform-origin;
+  transition-property: transform, transform-origin;
+  transition-duration: 1s;
+  transition-timing-function: ease; }
+
+.useful-zoom-controls {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 20; }
+  .useful-zoom-controls button {
+    overflow: hidden;
+    position: relative;
+    text-align: left;
+    text-indent: 58px;
+    white-space: nowrap;
+    /* Because of Internet Explorer 8 we can't have nice thing. */
+    overflow: visible;
+    text-indent: -999em;
+    background-color: #ff6a00;
+    border: none;
+    cursor: pointer;
+    display: block;
+    height: 32px;
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 0;
+    width: 32px;
+    z-index: 10; }
+    .useful-zoom-controls button:before {
+      background: Transparent url(../img/zoom.png) no-repeat 0 0;
+      content: "";
+      display: block;
+      font-family: FontAwesome;
+      font-size: 16px;
+      height: 32px;
+      line-height: 32px;
+      margin-left: -16px;
+      margin-top: -16px;
+      width: 32px;
+      position: absolute;
+      left: 50%;
+      text-align: center;
+      top: 50%; }
+  .useful-zoom-controls button:hover {
+    background-color: #ff9800; }
+  .useful-zoom-controls .disabled,
+  .useful-zoom-controls .disabled:hover {
+    background-color: #7f7f7f; }
+  .useful-zoom-controls .useful-zoom-in:before {
+    background-position: 0 -32px; }
+  .useful-zoom-controls .useful-zoom-out:before {
+    background-position: 100% -32px; }

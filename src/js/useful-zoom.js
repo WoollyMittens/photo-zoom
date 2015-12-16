@@ -12,31 +12,30 @@ useful.Zoom = useful.Zoom || function () {};
 
 // extend the constructor
 useful.Zoom.prototype.init = function (config) {
-	// properties
+	// invoke strict mode
 	"use strict";
-	// methods
-	this.only = function (config) {
-		// start an instance of the script
-		return new this.Main(config, this).init();
+	// define the default properties
+	this.config = {
+		'element' : document.getElementById('zoomExample'),
+		'tileSource' : 'php/imageslice.php?src=../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
+		'tileCache' : 128,
+		'tileSize' : 128,
+		'allowRotation' : false
 	};
-	this.each = function (config) {
-		var _config, _context = this, instances = [];
-		// for all element
-		for (var a = 0, b = config.elements.length; a < b; a += 1) {
-			// clone the configuration
-			_config = Object.create(config);
-			// insert the current element
-			_config.element = config.elements[a];
-			// delete the list of elements from the clone
-			delete _config.elements;
-			// start a new instance of the object
-			instances[a] = new this.Main(_config, _context).init();
-		}
-		// return the instances
-		return instances;
-	};
-	// return a single or multiple instances of the script
-	return (config.elements) ? this.each(config) : this.only(config);
+  // update the properties
+  for (var name in config) { this.config[name] = config[name]; }
+  // bind the components
+  this.main = new this.Main().init(this);
+	// expose the public functions
+	this.transform = this.main.transform.bind(this.main);
+	this.moveBy = this.main.moveBy.bind(this.main);
+	this.moveTo = this.main.moveTo.bind(this.main);
+	this.zoomBy = this.main.zoomBy.bind(this.main);
+	this.zoomTo = this.main.zoomTo.bind(this.main);
+	this.rotateBy = this.main.rotateBy.bind(this.main);
+	this.rotateTo = this.main.rotateTo.bind(this.main);
+  // return the object
+  return this;
 };
 
 // return as a require.js module

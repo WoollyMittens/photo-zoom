@@ -16,8 +16,8 @@ useful.Zoom.prototype.Controls = function (parent) {
 	// PROPERTIES
 
 	"use strict";
-	this.parent = parent;
-	this.config = parent.config;
+	this.context = null;
+	this.config = null;
 
 	this.element = null;
 	this.zoomIn = null;
@@ -25,7 +25,10 @@ useful.Zoom.prototype.Controls = function (parent) {
 
 	// METHODS
 
-	this.init = function () {
+	this.init = function (context) {
+		// store the context
+		this.context = context;
+		this.config = context.config;
 		// create a controls
 		this.element = document.createElement('menu');
 		this.element.className = 'useful-zoom-controls';
@@ -33,22 +36,22 @@ useful.Zoom.prototype.Controls = function (parent) {
 		this.zoomIn = document.createElement('button');
 		this.zoomIn.className = 'useful-zoom-in enabled';
 		this.zoomIn.innerHTML = 'Zoom In';
-		this.zoomIn.addEventListener('touchstart', this.onSuspendTouch());
-		this.zoomIn.addEventListener('mousedown', this.onSuspendTouch());
-		this.zoomIn.addEventListener('touchend', this.onZoom(1.5));
-		this.zoomIn.addEventListener('mouseup', this.onZoom(1.5));
+		this.zoomIn.addEventListener('touchstart', this.onSuspendTouch.bind(this));
+		this.zoomIn.addEventListener('mousedown', this.onSuspendTouch.bind(this));
+		this.zoomIn.addEventListener('touchend', this.onZoom.bind(this, 1.5));
+		this.zoomIn.addEventListener('mouseup', this.onZoom.bind(this, 1.5));
 		this.element.appendChild(this.zoomIn);
 		// add the zoom out button
 		this.zoomOut = document.createElement('button');
 		this.zoomOut.className = 'useful-zoom-out disabled';
 		this.zoomOut.innerHTML = 'Zoom Out';
-		this.zoomOut.addEventListener('touchstart', this.onSuspendTouch());
-		this.zoomOut.addEventListener('mousedown', this.onSuspendTouch());
-		this.zoomOut.addEventListener('touchend', this.onZoom(0.75));
-		this.zoomOut.addEventListener('mouseup', this.onZoom(0.75));
+		this.zoomOut.addEventListener('touchstart', this.onSuspendTouch.bind(this));
+		this.zoomOut.addEventListener('mousedown', this.onSuspendTouch.bind(this));
+		this.zoomOut.addEventListener('touchend', this.onZoom.bind(this, 0.75));
+		this.zoomOut.addEventListener('mouseup', this.onZoom.bind(this, 0.75));
 		this.element.appendChild(this.zoomOut);
 		// add the controls to the parent
-		this.parent.element.appendChild(this.element);
+		this.context.element.appendChild(this.element);
 		// return the object
 		return this;
 	};
@@ -71,30 +74,24 @@ useful.Zoom.prototype.Controls = function (parent) {
 	// EVENTS
 
 	this.onZoom = function (factor) {
-		var _this = this;
-		return function (evt) {
-			// cancel the click
-			evt.preventDefault();
-			// restore the touch events
-			_this.parent.gestures(true);
-			// apply the zoom factor
-			var transformation = _this.config.transformation,
-				dimensions = _this.config.dimensions;
-			// apply the zoom factor to the transformation
-			transformation.zoom = Math.max(Math.min(transformation.zoom * factor, dimensions.maxZoom), 1);
-			// redraw
-			_this.parent.redraw();
-		};
+		// cancel the click
+		event.preventDefault();
+		// restore the touch events
+		this.context.gestures(true);
+		// apply the zoom factor
+		var transformation = this.config.transformation,
+			dimensions = this.config.dimensions;
+		// apply the zoom factor to the transformation
+		transformation.zoom = Math.max(Math.min(transformation.zoom * factor, dimensions.maxZoom), 1);
+		// redraw
+		this.context.redraw();
 	};
 
 	this.onSuspendTouch = function () {
-		var _this = this;
-		return function (evt) {
-			// cancel the click
-			evt.preventDefault();
-			// suspend touch events
-			_this.parent.gestures(false);
-		};
+		// cancel the click
+		event.preventDefault();
+		// suspend touch events
+		this.context.gestures(false);
 	};
 
 };

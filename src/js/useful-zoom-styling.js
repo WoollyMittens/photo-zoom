@@ -11,18 +11,22 @@ var useful = useful || {};
 useful.Zoom = useful.Zoom || function () {};
 
 // extend the constructor
-useful.Zoom.prototype.Styling = function (parent) {
+useful.Zoom.prototype.Styling = function () {
 
 	// PROPERTIES
 
 	"use strict";
-	this.parent = parent;
-	this.config = parent.config;
-	this.element = parent.element;
+	this.context = null;
+	this.config = null;
+	this.element = null;
 
 	// METHODS
 
-	this.init = function () {
+	this.init = function (context) {
+		// store the context
+		this.context = context;
+		this.config = context.config;
+		this.element = context.element;
 		// create a custom stylesheet
 		var style = document.createElement("style");
 		if (navigator.userAgent.match(/webkit/gi)) { style.appendChild(document.createTextNode("")); }

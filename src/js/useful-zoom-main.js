@@ -11,38 +11,40 @@ var useful = useful || {};
 useful.Zoom = useful.Zoom || function () {};
 
 // extend the constructor
-useful.Zoom.prototype.Main = function (config, context) {
+useful.Zoom.prototype.Main = function () {
 
 	// PROPERTIES
 
 	"use strict";
-	this.context = context;
-	this.config = config;
-	this.element = config.element;
-
-	this.config.transformation = {
-		'left' : 0.5,
-		'top' : 0.5,
-		'zoom' : 1,
-		'rotate' : 0
-	};
-	this.config.dimensions = {
-		'width' : null,
-		'height' : null,
-		'maxWidth' : null,
-		'maxHeight' : null
-	};
-
-	// OBJECTS
-
-	this.styling = new this.context.Styling(this).init();
-	this.overlay = new this.context.Overlay(this).init();
-	this.controls = new this.context.Controls(this).init();
-	this.touch = new this.context.Touch(this).init();
+	this.context = null;
+	this.config = null;
+	this.element = null;
 
 	// METHODS
 
-	this.init = function () {
+	this.init = function (context) {
+		// store the context
+		this.context = context;
+		this.config = context.config;
+		this.element = context.config.element;
+		// apply the transformation
+		this.config.transformation = {
+			'left' : 0.5,
+			'top' : 0.5,
+			'zoom' : 1,
+			'rotate' : 0
+		};
+		this.config.dimensions = {
+			'width' : null,
+			'height' : null,
+			'maxWidth' : null,
+			'maxHeight' : null
+		};
+		// create the components
+		this.styling = new this.context.Styling().init(this);
+		this.overlay = new this.context.Overlay().init(this);
+		this.controls = new this.context.Controls().init(this);
+		this.touch = new this.context.Touch().init(this);
 		// first redraw
 		this.redraw();
 		// return the object
@@ -84,8 +86,7 @@ useful.Zoom.prototype.Main = function (config, context) {
 		// activate the transition
 		this.overlay.transitions(true);
 		// trigger the transformation
-		var _this = this;
-		setTimeout(function () { _this.redraw(); }, 0);
+		setTimeout(this.redraw.bind(this), 0);
 	};
 
 	this.moveBy = function (x,y) {
