@@ -1,21 +1,56 @@
 /*
 	Source:
-	van Creij, Maurice (2014). "useful.gestures.js: A library of useful functions to ease working with touch and gestures.", version 20141127, http://www.woollymittens.nl/.
+	van Creij, Maurice (2018). "gestures.js: A library of useful functions to ease working with touch and gestures.", http://www.woollymittens.nl/.
 
 	License:
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 */
 
-// create the constructor if needed
-var useful = useful || {};
-useful.Gestures = useful.Gestures || function () {};
-
 // extend the constructor
-useful.Gestures.prototype.Main = function (config, context) {
+var Gestures = function (config) {
 
 	// PROPERTIES
 
-	"use strict";
+	// METHODS
+
+	this.only = function (config) {
+		// start an instance of the script
+		return new this.Main(config, this);
+	};
+
+	this.each = function (config) {
+		var _config, _context = this, instances = [];
+		// for all element
+		for (var a = 0, b = config.elements.length; a < b; a += 1) {
+			// clone the configuration
+			_config = Object.create(config);
+			// insert the current element
+			_config.element = config.elements[a];
+			// delete the list of elements from the clone
+			delete _config.elements;
+			// start a new instance of the object
+			instances[a] = new this.Main(_config, _context);
+		}
+		// return the instances
+		return instances;
+	};
+
+	// START
+
+	return (config.elements) ? this.each(config) : this.only(config);
+
+};
+
+// return as a require.js module
+if (typeof module !== 'undefined') {
+	exports = module.exports = Gestures;
+}
+
+// extend the class
+Gestures.prototype.Main = function (config, context) {
+
+	// PROPERTIES
+
 	this.config = config;
 	this.context = context;
 	this.element = config.element;
@@ -27,11 +62,9 @@ useful.Gestures.prototype.Main = function (config, context) {
 		// check the configuration properties
 		this.config = this.checkConfig(config);
 		// add the single touch events
-		if (config.allowSingle) { this.single = new this.context.Single(this).init(); }
+		if (config.allowSingle) { this.single = new this.context.Single(this); }
 		// add the multi touch events
-		if (config.allowMulti) { this.multi = new this.context.Multi(this).init(); }
-		// return the object
-		return this;
+		if (config.allowMulti) { this.multi = new this.context.Multi(this); }
 	};
 
 	this.checkConfig = function (config) {
@@ -110,31 +143,17 @@ useful.Gestures.prototype.Main = function (config, context) {
 		this.config.cancelGesture = true;
 	};
 
+	// EVENTS
+
+	this.init();
+
 };
 
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Gestures.Main;
-}
-
-/*
-	Source:
-	van Creij, Maurice (2014). "useful.gestures.js: A library of useful functions to ease working with touch and gestures.", version 20141127, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Gestures = useful.Gestures || function () {};
-
-// extend the constructor
-useful.Gestures.prototype.Multi = function (parent) {
+// extend the class
+Gestures.prototype.Multi = function (parent) {
 
 	// PROPERTIES
 
-	"use strict";
 	this.parent = parent;
 	this.config = parent.config;
 	this.element = parent.config.element;
@@ -161,8 +180,6 @@ useful.Gestures.prototype.Multi = function (parent) {
 			this.element.addEventListener('touchmove', this.onChangeFallback());
 			this.element.addEventListener('touchend', this.onEndFallback());
 		}
-		// return the object
-		return this;
 	};
 
 	this.cancelGesture = function (event) {
@@ -383,31 +400,17 @@ useful.Gestures.prototype.Multi = function (parent) {
 		};
 	};
 
+	// EVENTS
+
+	this.init();
+
 };
 
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Gestures.Multi;
-}
-
-/*
-	Source:
-	van Creij, Maurice (2014). "useful.gestures.js: A library of useful functions to ease working with touch and gestures.", version 20141127, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Gestures = useful.Gestures || function () {};
-
-// extend the constructor
-useful.Gestures.prototype.Single = function (parent) {
+// extend the class
+Gestures.prototype.Single = function (parent) {
 
 	// PROPERTIES
 
-	"use strict";
 	this.parent = parent;
 	this.config = parent.config;
 	this.element = parent.config.element;
@@ -429,8 +432,6 @@ useful.Gestures.prototype.Single = function (parent) {
 		this.element.addEventListener('mspointerdown', this.onStartTouch());
 		this.element.addEventListener('mspointermove', this.onChangeTouch());
 		document.body.addEventListener('mspointerup', this.onEndTouch());
-		// return the object
-		return this;
 	};
 
 	this.cancelTouch = function (event) {
@@ -574,66 +575,11 @@ useful.Gestures.prototype.Single = function (parent) {
 		};
 	};
 
-};
+	// EVENTS
 
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Gestures.Single;
-}
-
-/*
-	Source:
-	van Creij, Maurice (2014). "useful.gestures.js: A library of useful functions to ease working with touch and gestures.", version 20141127, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Gestures = useful.Gestures || function () {};
-
-// extend the constructor
-useful.Gestures.prototype.init = function (config) {
-
-	// PROPERTIES
-	
-	"use strict";
-
-	// METHODS
-	
-	this.only = function (config) {
-		// start an instance of the script
-		return new this.Main(config, this).init();
-	};
-	
-	this.each = function (config) {
-		var _config, _context = this, instances = [];
-		// for all element
-		for (var a = 0, b = config.elements.length; a < b; a += 1) {
-			// clone the configuration
-			_config = Object.create(config);
-			// insert the current element
-			_config.element = config.elements[a];
-			// delete the list of elements from the clone
-			delete _config.elements;
-			// start a new instance of the object
-			instances[a] = new this.Main(_config, _context).init();
-		}
-		// return the instances
-		return instances;
-	};
-
-	// START
-
-	return (config.elements) ? this.each(config) : this.only(config);
+	this.init();
 
 };
-
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Gestures;
-}
 
 /*
 	Source:
@@ -1232,7 +1178,7 @@ Zoom.prototype.Touch = function(context) {
 		// make the dimensions update themselves upon resize
 		window.addEventListener('resize', this.onResize.bind(this));
 		// add touch event handlers
-		this.gestures = new useful.Gestures().init({
+		this.gestures = new Gestures({
 			'element': this.element,
 			'threshold': 50,
 			'increment': 0.1,

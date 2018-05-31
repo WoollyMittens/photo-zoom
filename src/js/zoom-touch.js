@@ -17,7 +17,7 @@ Zoom.prototype.Touch = function(context) {
 		// make the dimensions update themselves upon resize
 		window.addEventListener('resize', this.onResize.bind(this));
 		// add touch event handlers
-		this.gestures = new useful.Gestures().init({
+		this.gestures = new Gestures({
 			'element': this.element,
 			'threshold': 50,
 			'increment': 0.1,
