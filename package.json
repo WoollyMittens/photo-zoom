@@ -4,7 +4,6 @@
 	"devDependencies": {
 		"gulp": "",
 		"gulp-connect": "",
-		"gulp-connect": "",
 		"gulp-connect-php": "",
 		"gulp-sass": "",
 		"gulp-autoprefixer": "",

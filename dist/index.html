@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>useful-zoom.js: Pan and Zoom an Image</title>
+		<title>zoom.js: Pan and Zoom an Image</title>
 		<style>
 			html { font-family:Sans-Serif; font-size:75%; height:100%; }
 			body { _height:100%; line-height:180%; margin:0; min-height:100%; padding:1%; }
@@ -28,15 +28,15 @@
 			<aside>
 
 				<!-- Cut below this -->
-				<style>@import url("./css/useful-zoom.css");</style>
+				<style>@import url("./css/zoom.css");</style>
 				<figure id="zoomExample" class="useful-zoom">
 					<a href="./img/photo_0_large.jpg" data-width="4608" data-height="3456" data-left="0" data-top="0" data-right="1" data-bottom="1"><img title="Lorem Ipsum" alt="Lorem ipsum dolor sit amet" src="./img/photo_0_small.jpg"/></a>
 				</figure>
-				<script src="./js/useful-zoom.js"></script>
+				<script src="./js/zoom.js"></script>
 				<script>
 				//<!--
 					// create a new instance of the script
-					var zoom = new useful.Zoom().init({
+					var zoom = new Zoom({
 						'element' : document.getElementById('zoomExample'),
 						'tileSource' : 'php/imageslice.php?src=../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
 						'tileCache' : 128,

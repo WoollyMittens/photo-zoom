@@ -1,32 +1,5 @@
 /*
-Constants
-*/
-/*
-Hides text in the margin
-*/
-/*
-Turns a button into an icon
-*/
-/*
-Centres a graphic or glyph inside an icon
-*/
-/*
-Offers both the pixel and rem value of a single property
-*/
-/*
-Offers both the pixel and rem values of a shorthand property
-*/
-/*
-Offers the text size as both the pixel and rem value
-*/
-/*
-Adds vendor prefixed to a property
-*/
-/*
-Applies the "clearfix" hack to a container with floating content
-*/
-/*
-Reference Styling for An Interactive Row of Thumbnails
+	Reference Styling
 */
 .useful-zoom {
   display: block;
@@ -85,34 +58,32 @@ Reference Styling for An Interactive Row of Thumbnails
     text-align: left;
     text-indent: 58px;
     white-space: nowrap;
-    /* Because of Internet Explorer 8 we can't have nice thing. */
-    overflow: visible;
-    text-indent: -999em;
     background-color: #ff6a00;
     border: none;
     cursor: pointer;
     display: block;
     height: 32px;
-    margin: 0;
-    margin-bottom: 5px;
+    margin: 0 0 5px;
     padding: 0;
     width: 32px;
     z-index: 10; }
     .useful-zoom-controls button:before {
-      background: Transparent url(../img/zoom.png) no-repeat 0 0;
       content: "";
       display: block;
-      font-family: FontAwesome;
-      font-size: 16px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
       height: 32px;
-      line-height: 32px;
-      margin-left: -16px;
-      margin-top: -16px;
       width: 32px;
       position: absolute;
       left: 50%;
-      text-align: center;
-      top: 50%; }
+      top: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      background-image: url("../img/zoom.png");
+      background-repeat: no-repeat;
+      background-size: auto;
+      background-position: 0 0; }
   .useful-zoom-controls button:hover {
     background-color: #ff9800; }
   .useful-zoom-controls .disabled,
