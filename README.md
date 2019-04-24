@@ -18,11 +18,29 @@ This include can be added to the header or placed inline before the script is in
 <script src="./js/useful-zoom.js"></script>
 ```
 
+Or use [Require.js](https://requirejs.org/).
+
+```js
+requirejs([
+	'./lib/gestures.js',
+	'./js/zoom.js'
+], function(Gestures, Zoom) {
+	...
+});
+```
+
+Or import into an MVC framework.
+
+```js
+var Gestures = require('./lib/gestures.js');
+var Zoom = require('./js/zoom.js');
+```
+
 ## How to start the script
 
 ```javascript
-var zoom = new useful.Zoom().init({
-	'element' : document.getElementById('zoom'),
+var zoom = new Zoom({
+	'element' : document.getElementById('zoomExample'),
 	'tileSource' : 'php/imageslice.php?src=../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
 	'tileCache' : 128,
 	'tileSize' : 128,

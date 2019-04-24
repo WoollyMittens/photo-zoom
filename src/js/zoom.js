@@ -42,5 +42,5 @@ var Zoom = function (config) {
 };
 
 // return as a require.js module
-if (typeof define != 'undefined') define(['zoom'], function () { return Zoom });
+if (typeof define != 'undefined') define([], function () { return Zoom });
 if (typeof module != 'undefined') module.exports = Zoom;
