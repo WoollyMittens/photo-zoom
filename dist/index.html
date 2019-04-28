@@ -30,7 +30,7 @@
 				<!-- Cut below this -->
 				<style>@import url("./css/zoom.css");</style>
 				<figure id="zoomExample" class="useful-zoom">
-					<a href="./img/photo_0_large.jpg" data-width="4608" data-height="3456" data-left="0" data-top="0" data-right="1" data-bottom="1"><img title="Lorem Ipsum" alt="Lorem ipsum dolor sit amet" src="./img/photo_0_small.jpg"/></a>
+					<a href="img/photo_0_large.jpg" data-width="4608" data-height="3456" data-left="0" data-top="0" data-right="1" data-bottom="1"><img title="Lorem Ipsum" alt="Lorem ipsum dolor sit amet" src="./img/photo_0_small.jpg"/></a>
 				</figure>
 				<script src="./lib/gestures.js"></script>
 				<script src="./js/zoom.js"></script>
@@ -39,7 +39,7 @@
 					// create a new instance of the script
 					var zoom = new Zoom({
 						'element' : document.getElementById('zoomExample'),
-						'tileSource' : 'php/imageslice.php?src=../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
+						'tileSource' : './php/imageslice.php?src=../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
 						'tileCache' : 128,
 						'tileSize' : 128,
 						'allowRotation' : false
