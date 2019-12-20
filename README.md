@@ -42,7 +42,7 @@ var Zoom = require('js/zoom.js');
 ```javascript
 var zoom = new Zoom({
 	'element' : document.getElementById('zoomExample'),
-	'tileSource' : 'php/imageslice.php?src=../{src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
+	'tileSource' : 'php/imageslice.php?src={src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
 	'tileCache' : 128,
 	'tileSize' : 128,
 	'allowRotation' : false
