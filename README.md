@@ -15,26 +15,27 @@ The stylesheet is best included in the header of the document.
 This include can be added to the header or placed inline before the script is invoked.
 
 ```html
-<script src="lib/gestures.js"></script>
 <script src="js/zoom.js"></script>
 ```
 
-Or use [Require.js](https://requirejs.org/).
+Or using [Require.js](https://requirejs.org/), like this:
 
 ```js
-requirejs([
-	'lib/gestures.js',
-	'js/zoom.js'
-], function(Gestures, Zoom) {
+requirejs(['js/zoom.js'], function(Zoom) {
 	...
 });
 ```
 
-Or import into an MVC framework.
+Or like this:
 
 ```js
-var Gestures = require('lib/gestures.js');
 var Zoom = require('js/zoom.js');
+```
+
+Or as a [Javascript module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules):
+
+```js
+import Zoom from 'js/zoom.js';
 ```
 
 ## How to start the script
@@ -145,11 +146,12 @@ This project uses gulp.js from http://gulpjs.com/
 
 The following commands are available for development:
 + `npm install` - Installs the prerequisites.
-+ `gulp import` - Re-imports libraries from supporting projects to `./src/libs/` if available under the same folder tree.
-+ `gulp dev` - Builds the project for development purposes.
-+ `gulp dist` - Builds the project for deployment purposes.
++ `gulp clean` - Cleans out the dist folder.
++ `gulp prepare` - Imports the required libraries and assets.
++ `gulp build` - Builds the project entirely from scratch.
++ `gulp dev` - Rebuilds the project for development purposes.
++ `gulp prod` - Rebuilds the project for deployment purposes.
 + `gulp watch` - Continuously recompiles updated files during development sessions.
-+ `gulp connect` - Serves the project on a temporary web server at http://localhost:8500/ .
 
 ## License
 

@@ -1,4 +1,5 @@
-// extend the class
+// EXTENDS
+
 Zoom.prototype.Touch = function(context) {
 
 	// PROPERTIES

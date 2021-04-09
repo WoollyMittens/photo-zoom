@@ -1,39 +1,60 @@
 {
-	"name": "gulp-boilerplate",
-	"version": "0.0.0",
-	"browserslist": {
-	  "production": [
-	    ">0.2%",
-	    "not dead",
-	    "not op_mini all"
-	  ],
-	  "development": [
-	    "last 1 chrome version",
-	    "last 1 firefox version",
-	    "last 1 safari version",
-	    "last 1 ie version"
-	  ]
+	"name": "gigapixel-zoom",
+	"module": "./dist/js/zoom.js",
+	"description": "Pans and zooms images while loading additional detail on the fly.",
+	"version": "1.0.0",
+	"keywords": [
+		"zoom",
+		"gigapixel",
+		"tiles",
+		"viewer"
+	],
+	"author": "Maurice van Creij <maurice@woollymittens.nl> (maurice@woollymittens.nl)",
+	"license": "MIT",
+	"homepage": "http://www.woollymittens.nl/default.php?url=useful-zoom",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/WoollyMittens/useful-zoom.git"
+	},
+	"bugs": {
+		"url": "https://github.com/WoollyMittens/useful-zoom/issues"
 	},
 	"devDependencies": {
-		"canvas": "",
-		"del": "",
-		"exif": "",
 		"fs": "",
-		"gm": "",
-		"gulp": "",
-		"gulp-autoprefixer": "",
-		"gulp-clean": "",
-		"gulp-concat": "",
-		"gulp-connect": "",
-		"gulp-connect-php": "",
-		"gulp-imagemin": "",
-		"gulp-sass": "",
-		"gulp-sourcemaps": "",
-		"gulp-special-html": "",
-		"gulp-uglify": "",
-		"imagemin-pngquant": "",
-		"jsdom": "",
-		"request": "",
-		"xmldom": ""
+		"fs-extra": "",
+		"node-fetch": "",
+		"npm-watch": "",
+		"sass": "",
+		"uglify-js": ""
+	},
+	"watch": {
+		"scripts_dev": {
+			"patterns": [
+				"src/lib",
+				"src/js"
+			],
+			"extensions": "js",
+			"quiet": false
+		},
+		"styles_dev": {
+			"patterns": [
+				"src/scss"
+			],
+			"extensions": "scss",
+			"quiet": false
+		}
+	},
+	"scripts": {
+		"scripts_dev": "uglifyjs ./src/lib/*.js ./src/js/*.js --output ./dist/js/zoom.js --beautify --source-map --enclose",
+		"scripts_prod": "uglifyjs ./src/lib/*.js ./src/js/*.js --output ./dist/js/zoom.js --compress --mangle --keep-fnames --source-map --enclose",
+		"styles_dev": "sass ./src/scss/zoom.scss ./dist/css/zoom.css --style expanded --update",
+		"styles_prod": "sass ./src/scss/zoom.scss ./dist/css/zoom.css --style compressed",
+		"styles_watch": "sass --watch ./src/scss:./dist/css --style expanded",
+		"clean": "cd node_scripts && node cleandist && cd ..",
+		"prepare": "cd node_scripts && node downloadprereqs && node copyassets && cd ..",
+		"dev": "npm run scripts_dev && npm run styles_dev",
+		"prod": "npm run scripts_prod && npm run styles_prod",
+		"build": "npm run clean && npm run import && npm run prod",
+		"watch": "npm-watch"
 	}
 }

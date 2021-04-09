@@ -1,4 +1,5 @@
-// extend the class
+// EXTENDS
+
 Zoom.prototype.Overlay = function(context) {
 
 	// PROPERTIES
