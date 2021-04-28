@@ -40,6 +40,8 @@ import Zoom from 'js/zoom.js';
 
 ## How to start the script
 
+Use the following markup.
+
 ```html
 <figure id="zoomExample" class="useful-zoom">
 	<a href="img/photo_0_large.jpg" data-width="4608" data-height="3456" data-left="0" data-top="0" data-right="1" data-bottom="1"><img title="Lorem Ipsum" alt="Lorem ipsum dolor sit amet" src="./img/photo_0_small.jpg"/></a>
@@ -53,6 +55,8 @@ import Zoom from 'js/zoom.js';
 **data-width|height: {integer}** - Maximum bitmap size.
 
 **data-left|right|top|bottom: {float}** - Starting zoom position between 0 and 1.
+
+Call the following script.
 
 ```javascript
 var zoom = new Zoom({
