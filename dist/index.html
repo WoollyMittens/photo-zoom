@@ -32,11 +32,8 @@
 				<figure id="zoomExample" class="useful-zoom">
 					<a href="img/photo_0_large.jpg" data-width="4608" data-height="3456" data-left="0" data-top="0" data-right="1" data-bottom="1"><img title="Lorem Ipsum" alt="Lorem ipsum dolor sit amet" src="./img/photo_0_small.jpg"/></a>
 				</figure>
-				<script src="./lib/gestures.js"></script>
 				<script src="./js/zoom.js"></script>
 				<script>
-				//<!--
-					// create a new instance of the script
 					var zoom = new Zoom({
 						'element' : document.getElementById('zoomExample'),
 						'tileSource' : './php/imageslice.php?src={src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
@@ -44,9 +41,9 @@
 						'tileSize' : 128,
 						'allowRotation' : false
 					});
-				//-->
 				</script>
 				<!-- Cut above this -->
+
 				<p style="display:flex; justify-content:space-between; gap:10px;">
 					<a href="#" onclick="zoom.transform({left: 0.5405797101449278, top: 0.4434810533076427, zoom: 3.375, rotate: 0});">
 						<img alt="Sample transformation 1" src="./img/sample_1.png" style="width:100%;height:auto;"/>
