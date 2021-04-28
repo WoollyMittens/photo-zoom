@@ -42,9 +42,26 @@
 			],
 			"extensions": "scss",
 			"quiet": false
+		},
+		"assets_dev": {
+			"patterns": [
+				"src",
+				"src/xml", 
+				"src/data", 
+				"src/tiles", 
+				"src/fonts", 
+				"src/json", 
+				"src/img", 
+				"src/photos", 
+				"src/php", 
+				"src/html"
+			],
+			"extensions": "html,php",
+			"quiet": false
 		}
 	},
 	"scripts": {
+		"assets_dev": "cd node_scripts && node copyassets && cd ..",
 		"scripts_dev": "uglifyjs ./src/lib/*.js ./src/js/*.js --output ./dist/js/zoom.js --beautify --source-map --enclose",
 		"scripts_prod": "uglifyjs ./src/lib/*.js ./src/js/*.js --output ./dist/js/zoom.js --compress --mangle --keep-fnames --source-map --enclose",
 		"styles_dev": "sass ./src/scss/zoom.scss ./dist/css/zoom.css --style expanded --update",

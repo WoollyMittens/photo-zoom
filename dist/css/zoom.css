@@ -1,1 +1,99 @@
-.useful-zoom{display:block;margin:0;padding:0;max-width:480px;min-width:240px;overflow:hidden;padding:0;position:relative}.useful-zoom *{box-sizing:border-box}.useful-zoom a img{display:block;height:auto;width:100%}.useful-zoom menu{transition-property:opacity;transition-duration:.3s;transition-timing-function:ease;opacity:.5}.useful-zoom:hover menu{opacity:1}.useful-zoom-overlay{background-size:100% auto;left:0;top:0;right:0;bottom:0;position:absolute;z-index:10}.useful-zoom-transition{transition-property:transform,transform-origin;transition-duration:1s;transition-timing-function:ease}.useful-zoom-controls{position:absolute;right:10px;top:10px;z-index:20}.useful-zoom-controls button{overflow:hidden;position:relative;text-align:left;text-indent:58px;white-space:nowrap;background-color:#ff6a00;border:none;cursor:pointer;display:block;height:32px;margin:0 0 5px;padding:0;width:32px;z-index:10}.useful-zoom-controls button:before{content:"";display:block;background-repeat:no-repeat;background-size:contain;background-position:center;height:32px;width:32px;position:absolute;left:50%;top:50%;transform:translate(-50%, -50%);background-image:url("../img/zoom.png");background-repeat:no-repeat;background-size:auto;background-position:0 0}.useful-zoom-controls button:hover{background-color:#ff9800}.useful-zoom-controls .disabled,.useful-zoom-controls .disabled:hover{background-color:#7f7f7f}.useful-zoom-controls .useful-zoom-in:before{background-position:0 -32px}.useful-zoom-controls .useful-zoom-out:before{background-position:100% -32px}/*# sourceMappingURL=zoom.css.map */
+/*
+	Reference Styling
+*/
+.useful-zoom {
+  display: block;
+  margin: 0;
+  padding: 0;
+  max-width: 480px;
+  min-width: 240px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+.useful-zoom * {
+  box-sizing: border-box;
+}
+.useful-zoom a img {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+.useful-zoom menu {
+  transition-property: opacity;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+  opacity: 0.5;
+}
+.useful-zoom:hover menu {
+  opacity: 1;
+}
+.useful-zoom-overlay {
+  background-size: 100% auto;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  z-index: 10;
+  will-change: transform;
+}
+.useful-zoom-transition {
+  transition-property: transform, transform-origin;
+  transition-duration: 1s;
+  transition-timing-function: ease;
+}
+.useful-zoom-controls {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 20;
+}
+.useful-zoom-controls button {
+  overflow: hidden;
+  position: relative;
+  text-align: left;
+  text-indent: 58px;
+  white-space: nowrap;
+  background-color: #ff6a00;
+  border: none;
+  cursor: pointer;
+  display: block;
+  height: 32px;
+  margin: 0 0 5px;
+  padding: 0;
+  width: 32px;
+  z-index: 10;
+}
+.useful-zoom-controls button:before {
+  content: "";
+  display: block;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-image: url("../img/zoom.png");
+  background-repeat: no-repeat;
+  background-size: auto;
+  background-position: 0 0;
+}
+.useful-zoom-controls button:hover {
+  background-color: #ff9800;
+}
+.useful-zoom-controls .disabled,
+.useful-zoom-controls .disabled:hover {
+  background-color: #7f7f7f;
+}
+.useful-zoom-in:before {
+  background-position: 0 -32px !important;
+}
+.useful-zoom-out:before {
+  background-position: 100% -32px !important;
+}
+
+/*# sourceMappingURL=zoom.css.map */

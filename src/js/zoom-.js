@@ -1,6 +1,6 @@
 /*
 	Source:
-	van Creij, Maurice (2018). "zoom.js: Pan and Zoom an Image", http://www.woollymittens.nl/.
+	van Creij, Maurice (2021). "zoom.js: Pan and Zoom an Image", http://www.woollymittens.nl/.
 
 	License:
 	The MIT License, https://opensource.org/licenses/MIT.
