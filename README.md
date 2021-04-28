@@ -38,9 +38,7 @@ Or as a [Javascript module](https://developer.mozilla.org/en-US/docs/Web/JavaScr
 import Zoom from 'js/zoom.js';
 ```
 
-## How to start the script
-
-Use the following markup.
+## How to add the markup
 
 ```html
 <figure id="zoomExample" class="useful-zoom">
@@ -56,7 +54,7 @@ Use the following markup.
 
 **data-left|right|top|bottom: {float}** - Starting zoom position between 0 and 1.
 
-Call the following script.
+## How to start the script
 
 ```javascript
 var zoom = new Zoom({
