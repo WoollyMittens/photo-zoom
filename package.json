@@ -1,11 +1,11 @@
 {
-	"name": "gigapixel-zoom",
+	"name": "megapixel-zoom",
 	"module": "./dist/js/zoom.js",
 	"description": "Pans and zooms images while loading additional detail on the fly.",
 	"version": "1.0.0",
 	"keywords": [
 		"zoom",
-		"gigapixel",
+		"megapixel",
 		"tiles",
 		"viewer"
 	],
