@@ -1,7 +1,3 @@
-/*
-	Reference Styling
-*/
-
 .useful {
 	&-zoom {
 		display: block;
@@ -58,8 +54,10 @@
 			z-index: 20;
 
 			button {
-				@include iconParent(48);
-				background-color: $color-passive;
+				background-color: $passive;
+				background-repeat: no-repeat;
+				background-size: 16px auto;
+				background-position: center;
 				border: none;
 				cursor: pointer;
 				display: block;
@@ -68,32 +66,27 @@
 				padding: 0;
 				width: 32px;
 				z-index: 10;
-
-				&:before {
-					@include iconCenter(32);
-					background-image: url("../img/zoom.png");
-					background-repeat: no-repeat;
-					background-size: auto;
-					background-position: 0 0;
-				}
+				overflow: hidden;
+				white-space: nowrap;
+				text-indent: 110%;
 			}
 
 			button:hover {
-				background-color: $color-hover;
+				background-color: $hover;
 			}
 
 			.disabled,
 			.disabled:hover {
-				background-color: $color-disabled;
+				background-color: $disabled;
 			}
 		}
 
-		&-in:before {
-			background-position: 0 -32px !important;
+		&-in {
+			background-image: url("../img/zoom_in.svg");
 		}
 
-		&-out:before {
-			background-position: 100% -32px !important;
+		&-out {
+			background-image: url("../img/zoom_out.svg");
 		}
 	}
 }

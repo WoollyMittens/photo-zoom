@@ -1,4 +1,4 @@
-# useful.zoom.js: Pan and Zoom an Image
+# useful.zoom.js: Megapixel Zoom
 
 Pans and zooms images while loading additional detail on the fly.
 
