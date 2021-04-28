@@ -49,9 +49,8 @@ import Zoom from 'js/zoom.js';
 		data-top="0" 
 		data-right="1" 
 		data-bottom="1">
-		<img title="Lorem Ipsum" 
-			alt="Lorem ipsum dolor sit amet" 
-			src="./img/photo_0_small.jpg"/>
+		<img src="./img/photo_0_small.jpg" 
+			title="Lorem ipsum dolor sit amet"/>
 	</a>
 </figure>
 ```
