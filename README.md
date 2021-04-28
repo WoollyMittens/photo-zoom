@@ -64,6 +64,8 @@ var zoom = new Zoom({
 });
 ```
 
+**element : {DOM node}** - The target element for the script.
+
 **tileSource : {url}** - A webservice that provides image tiles (PHP example included).
 
 **tileCache : {integer}** - The amount of tiles that can be active at one time. Reduce this to save memory at the expense of bandwidth.
