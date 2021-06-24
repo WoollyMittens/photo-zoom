@@ -10,6 +10,8 @@
 
 var Zoom = function (config) {
 
+	'use strict';
+
 	// PROPERTIES
 
 	this.config = {
