@@ -1,5 +1,7 @@
 # useful.zoom.js: Megapixel Zoom
 
+// TODO: convert to modular / class based javascript
+
 Pans and zooms images while loading additional detail on the fly.
 
 ## How to include the script
@@ -27,7 +29,7 @@ requirejs(['js/zoom.js'], function(Zoom) {
 Or like this:
 
 ```js
-var Zoom = require('js/zoom.js');
+var Zoom} from "js/zoom.js');
 ```
 
 Or as a [Javascript module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules):
@@ -180,4 +182,4 @@ The following commands are available for development:
 
 ## License
 
-This work is licensed under a [MIT License](https://opensource.org/licenses/MIT). The latest version of this and other scripts by the same author can be found on [Github](https://github.com/WoollyMittens) and at [WoollyMittens.nl](https://www.woollymittens.nl/).
+This work is licensed under a [MIT License](https://opensource.org/licenses/MIT). The latest version of this and other scripts by the same author can be found on [Github](https://github.com/WoollyMittens).
