@@ -88,9 +88,9 @@ export class PhotoZoomOverlay {
 		var cols = dimensions.width * transformation.zoom / this.config.tileSize,
 			rows = dimensions.height * transformation.zoom / this.config.tileSize,
 			zoom = Math.ceil(transformation.zoom),
-			startCol = Math.max(Math.floor(area.left * cols), 0),
-			endCol = Math.min(Math.ceil(area.right * cols), cols),
-			startRow = Math.max(Math.floor(area.top * rows) + 1, 0),
+			startCol = Math.max(Math.floor(area.left * cols) - 1, 0),
+			endCol = Math.min(Math.ceil(area.right * cols) + 1, cols),
+			startRow = Math.max(Math.floor(area.top * rows) - 1, 0),
 			endRow = Math.min(Math.ceil(area.bottom * rows) + 1, rows),
 			tileName;
 		// for every row of the grid

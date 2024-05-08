@@ -1,4 +1,4 @@
-# useful.zoom.js: Megapixel Zoom
+# Dynamic Photo Zoom
 
 // TODO: convert to modular / class based javascript
 
@@ -6,36 +6,17 @@ Pans and zooms images while loading additional detail on the fly.
 
 ## How to include the script
 
-The stylesheet is best included in the header of the document.
+The includes can be added to the HTML document:
 
 ```html
-<link rel="stylesheet" href="css/zoom.css"/>
-```
-
-This include can be added to the header or placed inline before the script is invoked.
-
-```html
-<script src="js/zoom.js"></script>
-```
-
-Or using [Require.js](https://requirejs.org/), like this:
-
-```js
-requirejs(['js/zoom.js'], function(Zoom) {
-	...
-});
-```
-
-Or like this:
-
-```js
-var Zoom} from "js/zoom.js');
+<link rel="stylesheet" href="./css/zoom.css"/>
+<script src="./js/zoom.js" type="module"></script>
 ```
 
 Or as a [Javascript module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules):
 
 ```js
-import Zoom from 'js/zoom.js';
+import { Zoom } from 'js/zoom.js';
 ```
 
 ## How to add the markup
@@ -49,8 +30,7 @@ import Zoom from 'js/zoom.js';
 		data-top="0" 
 		data-right="1" 
 		data-bottom="1">
-		<img src="./img/photo_0_small.jpg" 
-			title="Lorem ipsum dolor sit amet"/>
+		<img src="./img/photo_0_small.jpg" width="512" height="384" title="Lorem ipsum dolor sit amet"/>
 	</a>
 </figure>
 ```
@@ -164,21 +144,6 @@ zoom.rotateTo(angle);
 Rotates the canvas to a set number of degrees.
 
 **angle : {float}** - A rotation between 0 and 359.
-
-## How to build the script
-
-This project uses node.js from http://nodejs.org/
-
-This project uses gulp.js from http://gulpjs.com/
-
-The following commands are available for development:
-+ `npm install` - Installs the prerequisites.
-+ `gulp clean` - Cleans out the dist folder.
-+ `gulp prepare` - Imports the required libraries and assets.
-+ `gulp build` - Builds the project entirely from scratch.
-+ `gulp dev` - Rebuilds the project for development purposes.
-+ `gulp prod` - Rebuilds the project for deployment purposes.
-+ `gulp watch` - Continuously recompiles updated files during development sessions.
 
 ## License
 
