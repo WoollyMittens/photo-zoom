@@ -23,14 +23,14 @@ import { Zoom } from 'js/zoom.js';
 
 ```html
 <figure id="zoomExample" class="useful-zoom">
-	<a href="img/photo_0_large.jpg" 
-		data-width="4608" 
-		data-height="3456" 
-		data-left="0" 
-		data-top="0" 
-		data-right="1" 
-		data-bottom="1">
-		<img src="./img/photo_0_small.jpg" width="512" height="384" title="Lorem ipsum dolor sit amet"/>
+  <a href="img/photo_0_large.jpg" 
+    data-width="4608" 
+    data-height="3456" 
+    data-left="0" 
+    data-top="0" 
+    data-right="1" 
+    data-bottom="1">
+      <img src="./img/photo_0_small.jpg" width="512" height="384" title="Lorem ipsum dolor sit amet"/>
 	</a>
 </figure>
 ```
@@ -47,11 +47,11 @@ import { Zoom } from 'js/zoom.js';
 
 ```javascript
 var zoom = new Zoom({
-	'element' : document.getElementById('zoomExample'),
-	'tileSource' : 'php/imageslice.php?src={src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
-	'tileCache' : 128,
-	'tileSize' : 128,
-	'allowRotation' : false
+  'element' : document.getElementById('zoomExample'),
+  'tileSource' : 'php/imageslice.php?src={src}&left={left}&top={top}&right={right}&bottom={bottom}&width={width}&height={height}',
+  'tileCache' : 128,
+  'tileSize' : 128,
+  'allowRotation' : false
 });
 ```
 
