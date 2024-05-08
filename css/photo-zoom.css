@@ -1,0 +1,90 @@
+.useful-zoom {
+	display: block;
+	margin: 0;
+	padding: 0;
+	max-width: 32rem;
+	min-width: 16rem;
+	overflow: hidden;
+	padding: 0;
+	position: relative;
+}
+
+.useful-zoom * {
+	box-sizing: border-box;
+}
+
+.useful-zoom a img {
+	display: block;
+	height: auto;
+	width: 100%;
+}
+
+.useful-zoom menu {
+	transition-property: opacity;
+	transition-duration: 0.3s;
+	transition-timing-function: ease;
+	opacity: 0.5;
+}
+
+.useful-zoom:hover menu {
+	opacity: 1;
+}
+
+.useful-zoom-overlay {
+	background-size: 100% auto;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	position: absolute;
+	z-index: 10;
+	will-change: transform;
+}
+
+.useful-zoom-transition {
+	transition-property: transform, transform-origin;
+	transition-duration: 1s;
+	transition-timing-function: ease;
+}
+
+.useful-zoom-controls {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	z-index: 20;
+}
+
+.useful-zoom-controls button {
+	background-color: #ff6a00;
+	background-repeat: no-repeat;
+	background-size: 16px auto;
+	background-position: center;
+	border: none;
+	cursor: pointer;
+	display: block;
+	height: 32px;
+	margin: 0 0 5px;
+	padding: 0;
+	width: 32px;
+	z-index: 10;
+	overflow: hidden;
+	white-space: nowrap;
+	text-indent: 110%;
+}
+
+.useful-zoom-controls button:hover {
+	background-color: #ff9800;
+}
+
+.useful-zoom-controls .disabled,
+.useful-zoom-controls .disabled:hover {
+	background-color: #7f7f7f;
+}
+
+.useful-zoom-in {
+	background-image: url("../img/zoom_in.svg");
+}
+
+.useful-zoom-out {
+	background-image: url("../img/zoom_out.svg");
+}
